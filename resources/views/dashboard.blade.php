@@ -15,7 +15,7 @@
                         <i class="bi bi-speedometer2 text-primary me-2"></i>
                         Bienvenido, {{ Auth::user()->name }}!
                     </h2>
-                    <p class="text-muted mb-0">Panel de control del sistema de billar</p>
+                    <p class="text-muted mb-0">Panel de control - Terkkos Billiards Club</p>
                 </div>
                 <div class="text-muted">
                     <i class="bi bi-calendar3 me-1"></i>
@@ -32,11 +32,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Torneos Activos</h6>
-                            <h2 class="mb-0">3</h2>
+                            <h6 class="text-uppercase fw-bold mb-1">Mesas Ocupadas</h6>
+                            <h2 class="mb-0">7</h2>
                         </div>
                         <div class="opacity-75">
-                            <i class="bi bi-calendar-event" style="font-size: 2rem;"></i>
+                            <i class="bi bi-grid-3x3-gap" style="font-size: 2rem;"></i>
                         </div>
                     </div>
                 </div>
@@ -48,11 +48,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Jugadores</h6>
-                            <h2 class="mb-0">42</h2>
+                            <h6 class="text-uppercase fw-bold mb-1">Mesas Libres</h6>
+                            <h2 class="mb-0">5</h2>
                         </div>
                         <div class="opacity-75">
-                            <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+                            <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
                         </div>
                     </div>
                 </div>
@@ -64,11 +64,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Partidas Hoy</h6>
-                            <h2 class="mb-0">12</h2>
+                            <h6 class="text-uppercase fw-bold mb-1">Ingresos Hoy</h6>
+                            <h2 class="mb-0">$280k</h2>
                         </div>
                         <div class="opacity-75">
-                            <i class="bi bi-play-circle" style="font-size: 2rem;"></i>
+                            <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
                         </div>
                     </div>
                 </div>
@@ -80,11 +80,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Mesas Libres</h6>
-                            <h2 class="mb-0">5</h2>
+                            <h6 class="text-uppercase fw-bold mb-1">Reservas</h6>
+                            <h2 class="mb-0">8</h2>
                         </div>
                         <div class="opacity-75">
-                            <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                            <i class="bi bi-calendar-check" style="font-size: 2rem;"></i>
                         </div>
                     </div>
                 </div>
@@ -106,20 +106,20 @@
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <button class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-2"></i>
-                            Nuevo Torneo
+                            <i class="bi bi-grid-3x3-gap me-2"></i>
+                            Asignar Mesa
                         </button>
                         <button class="btn btn-success">
-                            <i class="bi bi-person-plus me-2"></i>
-                            Registrar Jugador
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            Nueva Reserva
                         </button>
                         <button class="btn btn-warning">
-                            <i class="bi bi-play me-2"></i>
-                            Iniciar Partida
+                            <i class="bi bi-clock me-2"></i>
+                            Control de Tiempo
                         </button>
                         <button class="btn btn-info">
-                            <i class="bi bi-bar-chart me-2"></i>
-                            Ver Estadísticas
+                            <i class="bi bi-receipt me-2"></i>
+                            Generar Factura
                         </button>
                     </div>
                 </div>
@@ -140,14 +140,14 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
                                 <div class="bg-success rounded-circle p-2 text-white">
-                                    <i class="bi bi-trophy"></i>
+                                    <i class="bi bi-check-circle"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-1">Torneo "Mayo Championship" finalizado</h6>
+                                <h6 class="mb-1">Mesa 5 liberada - Sesión de 3 horas completada</h6>
                                 <p class="text-muted mb-0 small">
                                     <i class="bi bi-clock me-1"></i>
-                                    Hace 2 horas
+                                    Hace 30 minutos
                                 </p>
                             </div>
                         </div>
@@ -155,14 +155,14 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
                                 <div class="bg-primary rounded-circle p-2 text-white">
-                                    <i class="bi bi-person-plus"></i>
+                                    <i class="bi bi-grid-3x3-gap"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-1">Nuevo jugador registrado: Carlos Mendez</h6>
+                                <h6 class="mb-1">Mesa 2 asignada a Carlos Mendez</h6>
                                 <p class="text-muted mb-0 small">
                                     <i class="bi bi-clock me-1"></i>
-                                    Hace 4 horas
+                                    Hace 1 hora
                                 </p>
                             </div>
                         </div>
@@ -170,14 +170,14 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
                                 <div class="bg-warning rounded-circle p-2 text-white">
-                                    <i class="bi bi-play-circle"></i>
+                                    <i class="bi bi-currency-dollar"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-1">Partida iniciada en Mesa 3</h6>
+                                <h6 class="mb-1">Pago recibido - Mesa 7: $45.000</h6>
                                 <p class="text-muted mb-0 small">
                                     <i class="bi bi-clock me-1"></i>
-                                    Hace 6 horas
+                                    Hace 2 horas
                                 </p>
                             </div>
                         </div>
@@ -185,14 +185,14 @@
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
                                 <div class="bg-info rounded-circle p-2 text-white">
-                                    <i class="bi bi-calendar-event"></i>
+                                    <i class="bi bi-calendar-check"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h6 class="mb-1">Nuevo torneo programado para mañana</h6>
+                                <h6 class="mb-1">Nueva reserva para mañana 3:00 PM</h6>
                                 <p class="text-muted mb-0 small">
                                     <i class="bi bi-clock me-1"></i>
-                                    Hace 8 horas
+                                    Hace 3 horas
                                 </p>
                             </div>
                         </div>

@@ -17,14 +17,14 @@
                 </h1>
                 <p class="lead mb-4 text-dark">
                     El club de billar más prestigioso de la ciudad. 
-                    Disfruta de nuestras mesas profesionales, torneos emocionantes y el mejor ambiente billarístico.
+                    Alquila nuestras mesas profesionales por horas y disfruta del mejor ambiente billarístico.
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
                     <a href="#" class="btn btn-dark btn-lg">
-                        <i class="bi bi-play-circle me-2"></i>Comenzar Partida
+                        <i class="bi bi-grid-3x3-gap me-2"></i>Ver Mesas Disponibles
                     </a>
                     <a href="#" class="btn btn-outline-dark btn-lg">
-                        <i class="bi bi-people me-2"></i>Ver Jugadores
+                        <i class="bi bi-calendar-check me-2"></i>Reservar Mesa
                     </a>
                 </div>
             </div>
@@ -43,8 +43,8 @@
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col">
-                <h2 class="h2 mb-3">Características Principales</h2>
-                <p class="lead text-muted">Todo lo que necesitas para organizar torneos profesionales</p>
+                <h2 class="h2 mb-3">Servicios del Club</h2>
+                <p class="lead text-muted">Todo lo que necesitas para disfrutar del mejor billar</p>
             </div>
         </div>
         
@@ -53,12 +53,12 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-calendar-event"></i>
+                            <i class="bi bi-grid-3x3-gap"></i>
                         </div>
-                        <h5 class="card-title">Gestión de Torneos</h5>
+                        <h5 class="card-title">Mesas Profesionales</h5>
                         <p class="card-text text-muted">
-                            Crea y administra torneos con diferentes modalidades. 
-                            Configuración flexible para adaptarse a tus necesidades.
+                            Mesas de billar de alta calidad con paños nuevos. 
+                            Equipamiento profesional para la mejor experiencia de juego.
                         </p>
                     </div>
                 </div>
@@ -68,12 +68,12 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-people-fill"></i>
+                            <i class="bi bi-clock-history"></i>
                         </div>
-                        <h5 class="card-title">Registro de Jugadores</h5>
+                        <h5 class="card-title">Alquiler por Horas</h5>
                         <p class="card-text text-muted">
-                            Mantén una base de datos completa de todos los jugadores 
-                            con sus estadísticas y historial de participación.
+                            Sistema flexible de alquiler por horas. 
+                            Reserva tu mesa con anticipación o arrienda cuando llegues.
                         </p>
                     </div>
                 </div>
@@ -83,12 +83,12 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-bar-chart-fill"></i>
+                            <i class="bi bi-cup-hot"></i>
                         </div>
-                        <h5 class="card-title">Estadísticas Avanzadas</h5>
+                        <h5 class="card-title">Cafetería y Snacks</h5>
                         <p class="card-text text-muted">
-                            Análisis detallado del rendimiento de los jugadores 
-                            y estadísticas completas de los torneos.
+                            Disfruta de bebidas refrescantes y comida ligera 
+                            mientras juegas en nuestras cómodas instalaciones.
                         </p>
                     </div>
                 </div>
@@ -103,26 +103,26 @@
         <div class="row text-center">
             <div class="col-md-3 mb-4">
                 <div class="stat-item">
-                    <h3 class="display-4 text-dark fw-bold mb-2">25+</h3>
-                    <p class="text-muted mb-0">Torneos Organizados</p>
+                    <h3 class="display-4 text-dark fw-bold mb-2">12</h3>
+                    <p class="text-muted mb-0">Mesas de Billar</p>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
                 <div class="stat-item">
-                    <h3 class="display-4 text-success fw-bold mb-2">150+</h3>
-                    <p class="text-muted mb-0">Jugadores Registrados</p>
+                    <h3 class="display-4 text-success fw-bold mb-2">500+</h3>
+                    <p class="text-muted mb-0">Clientes Satisfechos</p>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
                 <div class="stat-item">
-                    <h3 class="display-4 fw-bold mb-2" style="color: #fbff14; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">500+</h3>
-                    <p class="text-muted mb-0">Partidas Jugadas</p>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-item">
-                    <h3 class="display-4 text-info fw-bold mb-2">12hrs</h3>
+                    <h3 class="display-4 fw-bold mb-2" style="color: #fbff14; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">13hrs</h3>
                     <p class="text-muted mb-0">Horario Diario</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-4 text-info fw-bold mb-2">5 años</h3>
+                    <p class="text-muted mb-0">De Experiencia</p>
                 </div>
             </div>
         </div>
@@ -134,9 +134,9 @@
     <div class="container">
         <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <h2 class="h2 mb-4">¿Listo para organizar tu próximo torneo?</h2>
+                <h2 class="h2 mb-4">¿Listo para disfrutar del mejor billar?</h2>
                 <p class="lead text-muted mb-4">
-                    Únete a nuestra plataforma y lleva la gestión de tus torneos de billar al siguiente nivel.
+                    Ven al Terkkos Billiards Club y disfruta de nuestras mesas profesionales en el mejor ambiente de la ciudad.
                 </p>
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
                     @guest

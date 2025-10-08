@@ -24,17 +24,17 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark fw-semibold" href="#">
-                        <i class="bi bi-calendar-event me-1"></i>Torneos
+                        <i class="bi bi-grid-3x3-gap me-1"></i>Mesas Disponibles
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark fw-semibold" href="#">
-                        <i class="bi bi-people-fill me-1"></i>Jugadores
+                        <i class="bi bi-clock-history me-1"></i>Reservas
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark fw-semibold" href="#">
-                        <i class="bi bi-bar-chart me-1"></i>Estadísticas
+                        <i class="bi bi-currency-dollar me-1"></i>Tarifas
                     </a>
                 </li>
             </ul>

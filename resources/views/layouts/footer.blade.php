@@ -11,15 +11,15 @@
                 </div>
                 <p class="text-dark mb-0" style="opacity: 0.8;">
                     El mejor club de billar de la ciudad. 
-                    Organiza torneos, compite y disfruta del mejor ambiente billarístico.
+                    Alquila nuestras mesas profesionales y disfruta del mejor ambiente billarístico.
                 </p>
             </div>
             <div class="col-md-3">
                 <h6 class="mb-3 text-dark fw-semibold">Enlaces Rápidos</h6>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Torneos</a></li>
-                    <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Jugadores</a></li>
-                    <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Estadísticas</a></li>
+                    <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Mesas Disponibles</a></li>
+                    <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Reservar Mesa</a></li>
+                    <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Tarifas</a></li>
                     <li><a href="#" class="text-dark text-decoration-none" style="opacity: 0.8;">Reglas del Club</a></li>
                 </ul>
             </div>
