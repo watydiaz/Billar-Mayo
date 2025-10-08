@@ -4,23 +4,26 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section bg-primary text-white py-5">
+<section class="hero-section bg-white text-dark py-5">
     <div class="container">
         <div class="row align-items-center min-vh-50">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">
-                    <i class="bi bi-trophy-fill text-warning me-3"></i>
-                    Billar Mayo
+                <h1 class="display-4 fw-bold mb-4 text-dark">
+                    <img src="https://billar.diaztecnologia.com/img/logo.jpg" 
+                         alt="Terkkos Logo" 
+                         height="60" 
+                         class="me-3 rounded logo-hover">
+                    Terkkos Billiards Club
                 </h1>
-                <p class="lead mb-4">
-                    El sistema más completo para gestionar torneos de billar. 
-                    Organiza competencias, registra jugadores y lleva estadísticas detalladas.
+                <p class="lead mb-4 text-dark">
+                    El club de billar más prestigioso de la ciudad. 
+                    Disfruta de nuestras mesas profesionales, torneos emocionantes y el mejor ambiente billarístico.
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
-                    <a href="#" class="btn btn-warning btn-lg">
-                        <i class="bi bi-play-circle me-2"></i>Comenzar Torneo
+                    <a href="#" class="btn btn-dark btn-lg">
+                        <i class="bi bi-play-circle me-2"></i>Comenzar Partida
                     </a>
-                    <a href="#" class="btn btn-outline-light btn-lg">
+                    <a href="#" class="btn btn-outline-dark btn-lg">
                         <i class="bi bi-people me-2"></i>Ver Jugadores
                     </a>
                 </div>
@@ -49,7 +52,7 @@
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <div class="feature-icon bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
                             <i class="bi bi-calendar-event"></i>
                         </div>
                         <h5 class="card-title">Gestión de Torneos</h5>
@@ -64,7 +67,7 @@
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-success bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
                             <i class="bi bi-people-fill"></i>
                         </div>
                         <h5 class="card-title">Registro de Jugadores</h5>
@@ -79,7 +82,7 @@
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-warning bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <div class="feature-icon bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
                             <i class="bi bi-bar-chart-fill"></i>
                         </div>
                         <h5 class="card-title">Estadísticas Avanzadas</h5>
@@ -100,7 +103,7 @@
         <div class="row text-center">
             <div class="col-md-3 mb-4">
                 <div class="stat-item">
-                    <h3 class="display-4 text-primary fw-bold mb-2">25+</h3>
+                    <h3 class="display-4 text-dark fw-bold mb-2">25+</h3>
                     <p class="text-muted mb-0">Torneos Organizados</p>
                 </div>
             </div>
@@ -112,14 +115,14 @@
             </div>
             <div class="col-md-3 mb-4">
                 <div class="stat-item">
-                    <h3 class="display-4 text-warning fw-bold mb-2">500+</h3>
+                    <h3 class="display-4 fw-bold mb-2" style="color: #fbff14; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">500+</h3>
                     <p class="text-muted mb-0">Partidas Jugadas</p>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
                 <div class="stat-item">
-                    <h3 class="display-4 text-danger fw-bold mb-2">24/7</h3>
-                    <p class="text-muted mb-0">Disponibilidad</p>
+                    <h3 class="display-4 text-info fw-bold mb-2">12hrs</h3>
+                    <p class="text-muted mb-0">Horario Diario</p>
                 </div>
             </div>
         </div>
@@ -137,14 +140,14 @@
                 </p>
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
                     @guest
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg">
+                        <a href="{{ route('register') }}" class="btn btn-dark btn-lg">
                             <i class="bi bi-person-plus me-2"></i>Registrarse Ahora
                         </a>
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary btn-lg">
+                        <a href="{{ route('login') }}" class="btn btn-outline-dark btn-lg">
                             <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
                         </a>
                     @else
-                        <a href="{{ url('/dashboard') }}" class="btn btn-primary btn-lg">
+                        <a href="{{ url('/dashboard') }}" class="btn btn-dark btn-lg">
                             <i class="bi bi-speedometer2 me-2"></i>Ir al Dashboard
                         </a>
                     @endguest
@@ -167,7 +170,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 202, 240, 0.1) 100%);
+        background: linear-gradient(135deg, rgba(251, 255, 20, 0.05) 0%, rgba(255, 255, 255, 0.1) 100%);
         z-index: 1;
     }
     .hero-section .container {

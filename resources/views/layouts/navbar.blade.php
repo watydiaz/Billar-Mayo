@@ -1,9 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-light navbar-terkkos">
     <div class="container-fluid">
         <!-- Brand/Logo -->
-        <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-            <i class="bi bi-trophy-fill me-2"></i>
-            {{ config('app.name', 'Billar Mayo') }}
+        <a class="navbar-brand fw-bold text-dark d-flex align-items-center" href="{{ url('/') }}">
+            <img src="https://billar.diaztecnologia.com/img/logo.jpg" 
+                 alt="Terkkos Logo" 
+                 height="40" 
+                 class="me-2 rounded logo-hover">
+            <span class="fs-5">Terkkos Billiards Club</span>
         </a>
 
         <!-- Mobile Toggle Button -->
@@ -15,22 +18,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ url('/') }}">
+                    <a class="nav-link text-dark fw-semibold {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ url('/') }}">
                         <i class="bi bi-house-door me-1"></i>Inicio
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link text-dark fw-semibold" href="#">
                         <i class="bi bi-calendar-event me-1"></i>Torneos
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link text-dark fw-semibold" href="#">
                         <i class="bi bi-people-fill me-1"></i>Jugadores
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link text-dark fw-semibold" href="#">
                         <i class="bi bi-bar-chart me-1"></i>Estadísticas
                     </a>
                 </li>
@@ -41,7 +44,7 @@
                 @if (Route::has('login'))
                     @auth
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle me-1"></i>
                                 {{ Auth::user()->name }}
                             </a>
@@ -65,13 +68,13 @@
                         </li>
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">
+                            <a class="nav-link text-dark fw-semibold" href="{{ route('login') }}">
                                 <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
                             </a>
                         </li>
                         @if (Route::has('register'))
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">
+                                <a class="nav-link text-dark fw-semibold" href="{{ route('register') }}">
                                     <i class="bi bi-person-plus me-1"></i>Registrarse
                                 </a>
                             </li>

@@ -3,12 +3,14 @@
 /* Import Google Fonts if needed */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Custom CSS Variables for consistent theming */
+/* Custom CSS Variables for Terkkos Billiards Club theming */
 :root {
     --bs-primary-rgb: 13, 110, 253;
     --bs-success-rgb: 25, 135, 84;
     --bs-warning-rgb: 255, 193, 7;
     --bs-danger-rgb: 220, 53, 69;
+    --terkkos-yellow: #fbff14;
+    --terkkos-yellow-rgb: 251, 255, 20;
 }
 
 /* Global styles */
@@ -28,6 +30,31 @@ body {
 
 .shadow-hover:hover {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Terkkos specific styles */
+.navbar-terkkos {
+    background-color: var(--terkkos-yellow) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.footer-terkkos {
+    background-color: var(--terkkos-yellow) !important;
+    border-top: 3px solid rgba(0,0,0,0.1);
+}
+
+.navbar-terkkos .nav-link:hover {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+.logo-hover {
+    transition: transform 0.3s ease;
+}
+
+.logo-hover:hover {
+    transform: scale(1.05);
 }
 
 /* Animation classes */
