@@ -1,11 +1,64 @@
-@import 'tailwindcss';
+/* Custom styles for Billar Mayo */
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Import Google Fonts if needed */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Custom CSS Variables for consistent theming */
+:root {
+    --bs-primary-rgb: 13, 110, 253;
+    --bs-success-rgb: 25, 135, 84;
+    --bs-warning-rgb: 255, 193, 7;
+    --bs-danger-rgb: 220, 53, 69;
+}
+
+/* Global styles */
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+}
+
+/* Custom utility classes */
+.shadow-soft {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.shadow-hover {
+    transition: box-shadow 0.3s ease;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Custom button styles */
+.btn-gradient-primary {
+    background: linear-gradient(45deg, #0d6efd, #6610f2);
+    border: none;
+    color: white;
+}
+
+.btn-gradient-primary:hover {
+    background: linear-gradient(45deg, #0b5ed7, #5a0ec2);
+    color: white;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
 }
