@@ -13,8 +13,9 @@ class PedidoController extends Controller
 {
     public function index()
     {
-        $pedidos = Pedido::with(['mesa', 'rondas.producto'])
-            ->whereIn('estado', ['abierto', 'en_mesa'])
+        // Solo gestión de pedidos, sin estadísticas
+        $pedidos = Pedido::with(['mesaAlquileres.mesa', 'rondas.producto'])
+            ->where('estado', '1')
             ->orderBy('created_at', 'desc')
             ->get();
             

@@ -30,7 +30,7 @@
                     <div class="col-6">
                         <strong>Estado:</strong><br>
                         <span class="badge {{ $pedido->estado_badge }}">
-                            {{ ucfirst(str_replace('_', ' ', $pedido->estado)) }}
+                            {{ $pedido->estado_texto }}
                         </span>
                     </div>
                     <div class="col-6">
@@ -67,7 +67,7 @@
                             </span>
                         </div>
                     </div>
-                    @if($pedido->estado == 'en_mesa')
+                    @if($pedido->estado == '1' && $pedido->mesa)
                         <form method="POST" action="{{ route('pedidos.finalizar-tiempo', $pedido) }}" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-warning btn-sm">
@@ -78,7 +78,7 @@
                     @endif
                 @else
                     <p class="text-muted mb-3">El tiempo en mesa no ha sido iniciado</p>
-                    @if($pedido->mesa && $pedido->estado == 'activo')
+                    @if($pedido->mesa && $pedido->estado == '1')
                         <form method="POST" action="{{ route('pedidos.iniciar-tiempo', $pedido) }}" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-success btn-sm">

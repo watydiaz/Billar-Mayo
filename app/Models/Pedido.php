@@ -28,6 +28,21 @@ class Pedido extends Model
         return $this->total_pedido;
     }
 
+    public function getEstadoTextoAttribute()
+    {
+        return $this->estado == '1' ? 'Activo' : 'Cerrado';
+    }
+
+    public function scopeActivos($query)
+    {
+        return $query->where('estado', '1');
+    }
+
+    public function scopeCerrados($query)
+    {
+        return $query->where('estado', '0');
+    }
+
     public function getObservacionesAttribute()
     {
         return $this->notas;
@@ -39,12 +54,17 @@ class Pedido extends Model
         return $this->hasMany(MesaAlquiler::class);
     }
 
+    public function mesaAlquileres(): HasMany
+    {
+        return $this->hasMany(MesaAlquiler::class);
+    }
+
     public function mesaAlquilerActivo()
     {
         return $this->mesaAlquiler()->whereIn('estado', ['activo', 'en_proceso'])->first();
     }
 
-    public function mesa()
+    public function getMesaAttribute()
     {
         $alquiler = $this->mesaAlquilerActivo();
         return $alquiler ? $alquiler->mesa : null;
@@ -76,10 +96,8 @@ class Pedido extends Model
     public function getEstadoBadgeAttribute()
     {
         return match($this->estado) {
-            'abierto' => 'bg-warning',
-            'en_mesa' => 'bg-success',
-            'finalizado' => 'bg-secondary',
-            'cancelado' => 'bg-danger',
+            '1' => 'bg-success',
+            '0' => 'bg-secondary',
             default => 'bg-primary'
         };
     }

@@ -45,21 +45,34 @@ class Mesa extends Model
         return $this->hasMany(Pedido::class);
     }
 
-    // Pedido activo en la mesa
+    // Relación con MesaAlquileres
+    public function mesaAlquileres(): HasMany
+    {
+        return $this->hasMany(MesaAlquiler::class);
+    }
+
+    // Alquiler activo en la mesa
+    public function alquilerActivo()
+    {
+        return $this->mesaAlquileres()->whereIn('estado', ['activo', 'en_proceso', 'reservado'])->first();
+    }
+
+    // Pedido activo en la mesa (compatibilidad)
     public function pedidoActivo()
     {
-        return $this->pedidos()->whereIn('estado', ['abierto', 'en_mesa'])->first();
+        $alquiler = $this->alquilerActivo();
+        return $alquiler ? $alquiler->pedido : null;
     }
 
     public function getEstadoBadgeAttribute()
     {
-        // Verificar si hay pedido activo
-        $pedidoActivo = $this->pedidoActivo();
+        // Verificar si hay alquiler activo
+        $alquilerActivo = $this->alquilerActivo();
         
-        if ($pedidoActivo) {
-            return match($pedidoActivo->estado) {
-                'en_mesa' => 'bg-danger', // Ocupada
-                'abierto' => 'bg-warning', // Reservada
+        if ($alquilerActivo) {
+            return match($alquilerActivo->estado) {
+                'activo', 'en_proceso' => 'bg-danger', // Ocupada
+                'reservado' => 'bg-warning', // Reservada
                 default => 'bg-success'
             };
         }
@@ -69,12 +82,12 @@ class Mesa extends Model
 
     public function getEstadoTextoAttribute()
     {
-        $pedidoActivo = $this->pedidoActivo();
+        $alquilerActivo = $this->alquilerActivo();
         
-        if ($pedidoActivo) {
-            return match($pedidoActivo->estado) {
-                'en_mesa' => 'Ocupada',
-                'abierto' => 'Reservada',
+        if ($alquilerActivo) {
+            return match($alquilerActivo->estado) {
+                'activo', 'en_proceso' => 'Ocupada',
+                'reservado' => 'Reservada',
                 default => 'Disponible'
             };
         }

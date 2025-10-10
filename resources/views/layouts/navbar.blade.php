@@ -18,8 +18,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-semibold {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ url('/') }}">
-                        <i class="bi bi-house-door me-1"></i>Inicio
+                    <a class="nav-link text-dark fw-semibold {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
