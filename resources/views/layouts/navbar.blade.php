@@ -28,8 +28,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-semibold" href="#">
-                        <i class="bi bi-clock-history me-1"></i>Reservas
+                    <a class="nav-link text-dark fw-semibold" href="{{ route('pedidos.index') }}">
+                        <i class="bi bi-receipt me-1"></i>Pedidos
                     </a>
                 </li>
                 <li class="nav-item">

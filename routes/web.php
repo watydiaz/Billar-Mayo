@@ -32,3 +32,13 @@ Route::post('/logout', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
+
+// Rutas de Pedidos (requieren autenticación)
+Route::middleware('auth')->group(function () {
+    Route::get('/pedidos', [App\Http\Controllers\PedidoController::class, 'index'])->name('pedidos.index');
+    Route::post('/pedidos', [App\Http\Controllers\PedidoController::class, 'store'])->name('pedidos.store');
+    Route::post('/pedidos/{pedido}/iniciar-tiempo', [App\Http\Controllers\PedidoController::class, 'iniciarTiempo'])->name('pedidos.iniciar-tiempo');
+    Route::post('/pedidos/{pedido}/finalizar-tiempo', [App\Http\Controllers\PedidoController::class, 'finalizarTiempo'])->name('pedidos.finalizar-tiempo');
+    Route::post('/pedidos/{pedido}/agregar-ronda', [App\Http\Controllers\PedidoController::class, 'agregarRonda'])->name('pedidos.agregar-ronda');
+    Route::delete('/pedidos/{pedido}', [App\Http\Controllers\PedidoController::class, 'eliminar'])->name('pedidos.eliminar');
+});
