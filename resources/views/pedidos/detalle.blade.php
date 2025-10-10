@@ -78,7 +78,7 @@
                     @endif
                 @else
                     <p class="text-muted mb-3">El tiempo en mesa no ha sido iniciado</p>
-                    @if($pedido->mesa && $pedido->estado == 'abierto')
+                    @if($pedido->mesa && $pedido->estado == 'activo')
                         <form method="POST" action="{{ route('pedidos.iniciar-tiempo', $pedido) }}" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-success btn-sm">

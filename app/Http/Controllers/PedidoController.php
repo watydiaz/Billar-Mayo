@@ -37,7 +37,7 @@ class PedidoController extends Controller
         $pedido = Pedido::create([
             'numero_pedido' => $numeroPedido,
             'nombre_cliente' => $request->nombre_cliente,
-            'estado' => 'abierto',
+            'estado' => '1',
             'total_pedido' => 0
         ]);
 
@@ -85,7 +85,7 @@ class PedidoController extends Controller
                 'estado' => 'finalizado'
             ]);
             
-            $pedido->update(['estado' => 'finalizado']);
+            $pedido->update(['estado' => '0']);
         }
 
         return redirect()->back()->with('success', 'Tiempo finalizado');

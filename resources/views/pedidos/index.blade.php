@@ -32,8 +32,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Pedidos Abiertos</h6>
-                            <h3 class="mb-0">{{ $pedidos->where('estado', 'abierto')->count() }}</h3>
+                            <h6 class="text-uppercase fw-bold mb-1">Pedidos Activos</h6>
+                            <h3 class="mb-0">{{ $pedidos->where('estado', 'activo')->count() }}</h3>
                         </div>
                         <i class="bi bi-receipt" style="font-size: 2rem; opacity: 0.7;"></i>
                     </div>
