@@ -8,13 +8,14 @@ use App\Models\Mesa;
 use App\Models\MesaAlquiler;
 use App\Models\Ronda;
 use App\Models\Producto;
+use App\Models\MesaRonda;
 
 class PedidoController extends Controller
 {
     public function index()
     {
-        // Solo gestión de pedidos, sin estadísticas
-        $pedidos = Pedido::with(['mesaAlquileres.mesa', 'rondas.producto'])
+        // Cargar pedidos con sus rondas y relaciones
+        $pedidos = Pedido::with(['mesaAlquileres.mesa', 'rondas.mesaRonda.mesa'])
             ->where('estado', '1')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -47,7 +48,8 @@ class PedidoController extends Controller
             MesaAlquiler::create([
                 'pedido_id' => $pedido->id,
                 'mesa_id' => $request->mesa_id,
-                'estado' => 'reservado',
+                'estado' => 'activo',
+                'fecha_inicio' => now(),
                 'precio_hora_aplicado' => Mesa::find($request->mesa_id)->precio_hora ?? 0
             ]);
         }
@@ -95,29 +97,275 @@ class PedidoController extends Controller
     public function agregarRonda(Request $request, Pedido $pedido)
     {
         $request->validate([
-            'responsable' => 'required|string|max:255',
-            'producto_id' => 'required|exists:productos,id',
-            'cantidad' => 'required|integer|min:1'
+            'mesa_id' => 'nullable|exists:mesas,id',
+            'iniciar_tiempo' => 'nullable|boolean'
         ]);
 
-        $producto = Producto::findOrFail($request->producto_id);
-        $subtotal = $producto->precio_venta * $request->cantidad;
+        // Obtener el siguiente número de ronda
+        $numeroRonda = $pedido->rondas()->max('numero_ronda') + 1;
 
-        Ronda::create([
+        $ronda = Ronda::create([
             'pedido_id' => $pedido->id,
-            'responsable' => $request->responsable,
-            'producto_id' => $request->producto_id,
-            'cantidad' => $request->cantidad,
-            'precio_unitario' => $producto->precio_venta,
-            'subtotal' => $subtotal
+            'numero_ronda' => $numeroRonda,
+            'total_ronda' => 0,
+            'estado' => 'activa'
+        ]);
+
+        $mensaje = 'Ronda ' . $numeroRonda . ' creada exitosamente';
+
+        // Si se seleccionó una mesa
+        if ($request->mesa_id) {
+            // Verificar que la mesa no esté ocupada
+            $mesaOcupada = MesaRonda::where('mesa_id', $request->mesa_id)
+                ->where('estado', 'activo')
+                ->exists();
+                
+            $mesaOcupadaAlquiler = MesaAlquiler::where('mesa_id', $request->mesa_id)
+                ->where('estado', 'activo')
+                ->exists();
+
+            if ($mesaOcupada || $mesaOcupadaAlquiler) {
+                return redirect()->back()->with('error', 'La mesa seleccionada ya está ocupada');
+            }
+
+            $mesa = Mesa::find($request->mesa_id);
+
+            // Crear registro en mesa_rondas
+            $mesaRonda = MesaRonda::create([
+                'ronda_id' => $ronda->id,
+                'mesa_id' => $request->mesa_id,
+                'estado' => 'pendiente'
+            ]);
+
+            // Crear registro en mesa_alquileres (compatibilidad)
+            MesaAlquiler::create([
+                'pedido_id' => $pedido->id,
+                'mesa_id' => $request->mesa_id,
+                'estado' => 'activo',
+                'fecha_inicio' => now(),
+                'precio_hora_aplicado' => $mesa->precio_hora ?? 0
+            ]);
+
+            $mensaje .= ' y mesa ' . $mesa->numero_mesa . ' asignada';
+
+            // Si se solicitó iniciar tiempo automáticamente
+            if ($request->iniciar_tiempo) {
+                $mesaRonda->iniciar();
+                
+                // Actualizar mesa_alquileres
+                $alquiler = MesaAlquiler::where('pedido_id', $pedido->id)
+                    ->where('mesa_id', $request->mesa_id)
+                    ->first();
+                    
+                if ($alquiler) {
+                    $alquiler->update([
+                        'fecha_inicio' => now(),
+                        'estado' => 'activo'
+                    ]);
+                }
+
+                $mensaje .= '. ¡Tiempo iniciado!';
+            }
+        }
+
+        return redirect()->back()->with('success', $mensaje);
+    }
+
+    // Asignar mesa a una ronda del pedido
+    public function asignarMesaRonda(Request $request, Pedido $pedido, Ronda $ronda)
+    {
+        $request->validate([
+            'mesa_id' => 'required|exists:mesas,id',
+        ]);
+
+        // Verificar que la ronda pertenece al pedido
+        if ($ronda->pedido_id !== $pedido->id) {
+            return redirect()->back()->with('error', 'Ronda no válida para este pedido');
+        }
+
+        // Verificar que la mesa no esté ocupada (tanto en mesa_rondas como mesa_alquileres)
+        $mesaOcupadaRonda = MesaRonda::where('mesa_id', $request->mesa_id)
+            ->where('estado', 'activo')
+            ->exists();
+            
+        $mesaOcupadaAlquiler = MesaAlquiler::where('mesa_id', $request->mesa_id)
+            ->where('estado', 'activo')
+            ->exists();
+
+        if ($mesaOcupadaRonda || $mesaOcupadaAlquiler) {
+            return redirect()->back()->with('error', 'La mesa ya está ocupada');
+        }
+
+        $mesa = Mesa::find($request->mesa_id);
+
+        // Crear registro en mesa_rondas (nueva estructura)
+        MesaRonda::updateOrCreate(
+            ['ronda_id' => $ronda->id],
+            [
+                'mesa_id' => $request->mesa_id,
+                'estado' => 'pendiente'
+            ]
+        );
+
+        // Crear registro en mesa_alquileres (compatibilidad)
+        MesaAlquiler::updateOrCreate(
+            ['pedido_id' => $pedido->id, 'mesa_id' => $request->mesa_id],
+            [
+                'estado' => 'activo',
+                'fecha_inicio' => now(),
+                'precio_hora_aplicado' => $mesa->precio_hora ?? 0
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Mesa ' . $mesa->numero_mesa . ' asignada a la ronda ' . $ronda->numero_ronda);
+    }
+
+    // Iniciar tiempo de una ronda
+    public function iniciarTiempoRonda(Pedido $pedido, Ronda $ronda)
+    {
+        if ($ronda->pedido_id !== $pedido->id) {
+            return redirect()->back()->with('error', 'Ronda no válida para este pedido');
+        }
+
+        $mesaRonda = $ronda->mesaRonda;
+
+        if (!$mesaRonda) {
+            return redirect()->back()->with('error', 'Debe asignar una mesa antes de iniciar el tiempo');
+        }
+
+        if ($mesaRonda->estado === 'activo') {
+            return redirect()->back()->with('error', 'El tiempo ya está activo para esta ronda');
+        }
+
+        // Iniciar tiempo en mesa_rondas
+        $mesaRonda->iniciar();
+
+        // Actualizar mesa_alquileres para compatibilidad
+        $alquiler = MesaAlquiler::where('pedido_id', $pedido->id)
+            ->where('mesa_id', $mesaRonda->mesa_id)
+            ->first();
+            
+        if ($alquiler) {
+            $alquiler->update([
+                'fecha_inicio' => now(),
+                'estado' => 'activo'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Tiempo iniciado para la ronda ' . $ronda->numero_ronda);
+    }
+
+    // Finalizar tiempo de una ronda
+    public function finalizarTiempoRonda(Pedido $pedido, Ronda $ronda)
+    {
+        if ($ronda->pedido_id !== $pedido->id) {
+            return redirect()->back()->with('error', 'Ronda no válida para este pedido');
+        }
+
+        $mesaRonda = $ronda->mesaRonda;
+
+        if (!$mesaRonda || $mesaRonda->estado !== 'activo') {
+            return redirect()->back()->with('error', 'No hay tiempo activo para esta ronda');
+        }
+
+        // Finalizar tiempo en mesa_rondas
+        $mesaRonda->finalizar();
+
+        // Actualizar mesa_alquileres para compatibilidad
+        $alquiler = MesaAlquiler::where('pedido_id', $pedido->id)
+            ->where('mesa_id', $mesaRonda->mesa_id)
+            ->where('estado', 'activo')
+            ->first();
+            
+        if ($alquiler) {
+            $tiempoTranscurrido = $mesaRonda->duracion_minutos;
+            $costoTotal = $mesaRonda->costo_tiempo;
+            
+            $alquiler->update([
+                'fecha_fin' => now(),
+                'tiempo_minutos' => $tiempoTranscurrido,
+                'costo_total' => $costoTotal,
+                'estado' => 'terminado'  // Corregido: usar valor válido del ENUM
+            ]);
+        }
+
+        // Actualizar el total de la ronda sumando el costo del tiempo
+        $ronda->update([
+            'total_ronda' => $ronda->total_ronda + $mesaRonda->costo_tiempo
         ]);
 
         // Actualizar total del pedido
         $pedido->update([
-            'total' => $pedido->rondas()->sum('subtotal')
+            'total_pedido' => $pedido->rondas()->sum('total_ronda')
         ]);
 
-        return redirect()->back()->with('success', 'Ronda agregada exitosamente');
+        return redirect()->back()->with('success', 'Tiempo finalizado para la ronda ' . $ronda->numero_ronda);
+    }
+
+    // Asignar responsable a una ronda finalizada
+    public function asignarResponsable(Request $request, Pedido $pedido, Ronda $ronda)
+    {
+        $request->validate([
+            'responsable' => 'required|string|max:255'
+        ]);
+
+        if ($ronda->pedido_id !== $pedido->id) {
+            return redirect()->back()->with('error', 'Ronda no válida para este pedido');
+        }
+
+        // Solo se puede asignar responsable si la ronda está finalizada
+        $mesaRonda = $ronda->mesaRonda;
+        if (!$mesaRonda || $mesaRonda->estado !== 'finalizado') {
+            return redirect()->back()->with('error', 'Solo se puede asignar responsable a rondas finalizadas');
+        }
+
+        $ronda->update([
+            'responsable' => $request->responsable,
+            'estado' => 'pagada'
+        ]);
+
+        return redirect()->back()->with('success', 'Responsable asignado: ' . $request->responsable);
+    }
+
+    // API para obtener datos de tiempo en tiempo real
+    public function tiempoRealRonda(Pedido $pedido, Ronda $ronda)
+    {
+        if ($ronda->pedido_id !== $pedido->id) {
+            return response()->json(['error' => 'Ronda no válida'], 400);
+        }
+
+        $mesaRonda = $ronda->mesaRonda;
+
+        if (!$mesaRonda || $mesaRonda->estado !== 'activo') {
+            return response()->json([
+                'activo' => false,
+                'duracion_segundos' => 0,
+                'duracion_minutos' => 0,
+                'costo' => 0,
+                'debug_info' => [
+                    'tiene_mesa_ronda' => !!$mesaRonda,
+                    'estado' => $mesaRonda ? $mesaRonda->estado : null,
+                    'ronda_id' => $ronda->id,
+                    'pedido_id' => $pedido->id
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'activo' => true,
+            'duracion_segundos' => $mesaRonda->duracion_segundos,
+            'duracion_minutos' => $mesaRonda->duracion_actual,
+            'costo' => $mesaRonda->costo_actual,
+            'inicio' => $mesaRonda->inicio_tiempo->format('H:i:s'),
+            'inicio_timestamp' => $mesaRonda->inicio_tiempo->timestamp,
+            'precio_por_hora' => $mesaRonda->mesa->precio_hora ?? 0,
+            'precio_por_minuto' => ($mesaRonda->mesa->precio_hora ?? 0) / 60,
+            'debug_info' => [
+                'mesa_id' => $mesaRonda->mesa_id,
+                'inicio_tiempo' => $mesaRonda->inicio_tiempo->toISOString(),
+                'estado' => $mesaRonda->estado
+            ]
+        ]);
     }
 
     public function eliminar(Pedido $pedido)

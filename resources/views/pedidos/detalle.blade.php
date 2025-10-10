@@ -52,41 +52,99 @@
                 </h6>
             </div>
             <div class="card-body">
-                @if($pedido->tiempo_inicio)
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <strong>Inicio:</strong><br>
-                            <span class="text-muted">
-                                {{ $pedido->tiempo_inicio->format('H:i:s') }}
-                            </span>
-                        </div>
-                        <div class="col-6">
-                            <strong>Transcurrido:</strong><br>
-                            <span class="text-primary fw-bold">
-                                {{ $pedido->tiempo_transcurrido }} minutos
-                            </span>
+                @if($pedido->mesa)
+                    <!-- Mesa Info -->
+                    <div class="alert alert-info mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">
+                                    <i class="bi bi-table me-1"></i>
+                                    Mesa {{ $pedido->mesa->numero_mesa ?? $pedido->mesa->id }}
+                                </h6>
+                                @if($pedido->mesaAlquilerActivo())
+                                    <small class="text-muted">
+                                        ${{ number_format($pedido->mesaAlquilerActivo()->precio_hora_aplicado, 0, ',', '.') }}/hora
+                                        | ${{ number_format($pedido->mesaAlquilerActivo()->precio_hora_aplicado / 60, 0, ',', '.') }}/min
+                                    </small>
+                                @endif
+                            </div>
+                            @if($pedido->tiempo_inicio)
+                                <span class="badge bg-success">
+                                    <i class="bi bi-play-fill me-1"></i>
+                                    Activo
+                                </span>
+                            @endif
                         </div>
                     </div>
-                    @if($pedido->estado == '1' && $pedido->mesa)
-                        <form method="POST" action="{{ route('pedidos.finalizar-tiempo', $pedido) }}" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-warning btn-sm">
-                                <i class="bi bi-stop-circle me-1"></i>
-                                Finalizar Tiempo
-                            </button>
-                        </form>
+
+                    @if($pedido->tiempo_inicio)
+                        <!-- Tiempo y Control -->
+                        <div class="row g-3">
+                            <!-- Información de tiempo -->
+                            <div class="col-md-8">
+                                <div class="bg-dark text-white p-3 rounded">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <small class="text-muted">Inicio</small>
+                                            <div class="fw-bold">{{ $pedido->tiempo_inicio->format('H:i:s') }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-warning">Transcurrido</small>
+                                            <div class="fw-bold fs-4 text-warning" 
+                                                 id="tiempo-transcurrido-{{ $pedido->id }}"
+                                                 data-inicio="{{ $pedido->tiempo_inicio->timestamp }}"
+                                                 data-precio-minuto="{{ $pedido->mesaAlquilerActivo() ? $pedido->mesaAlquilerActivo()->precio_hora_aplicado / 60 : 0 }}">
+                                                {{ $pedido->tiempo_transcurrido }} min
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2 opacity-25">
+                                    <div class="text-center">
+                                        <small class="text-light">Costo Total</small>
+                                        <div class="fs-5 fw-bold text-success">
+                                            $<span id="total-costo-{{ $pedido->id }}">{{ number_format($pedido->costo_tiempo_actual, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botón de control -->
+                            <div class="col-md-4 d-flex align-items-center">
+                                @if($pedido->estado == '1' && $pedido->mesaAlquilerActivo())
+                                    <form method="POST" action="{{ route('pedidos.finalizar-tiempo', $pedido) }}" class="w-100">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-lg w-100 h-100">
+                                            <i class="bi bi-stop-circle d-block" style="font-size: 2rem;"></i>
+                                            <strong>PARAR<br>TIEMPO</strong>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <!-- Sin tiempo iniciado -->
+                        <div class="alert alert-warning text-center mb-3">
+                            <i class="bi bi-pause-circle fs-3 text-warning"></i>
+                            <h6 class="mt-2 mb-1">Mesa Reservada</h6>
+                            <p class="mb-2">El tiempo aún no ha sido iniciado en la mesa</p>
+                            @if($pedido->estado == '1')
+                                <form method="POST" action="{{ route('pedidos.iniciar-tiempo', $pedido) }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-play-circle me-1"></i>
+                                        Iniciar Tiempo
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     @endif
                 @else
-                    <p class="text-muted mb-3">El tiempo en mesa no ha sido iniciado</p>
-                    @if($pedido->mesa && $pedido->estado == '1')
-                        <form method="POST" action="{{ route('pedidos.iniciar-tiempo', $pedido) }}" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-sm">
-                                <i class="bi bi-play-circle me-1"></i>
-                                Iniciar Tiempo en Mesa
-                            </button>
-                        </form>
-                    @endif
+                    <!-- Sin mesa asignada -->
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle fs-3 text-info"></i>
+                        <h6 class="mt-2">Sin Mesa Asignada</h6>
+                        <p class="mb-0">Este pedido no tiene una mesa asignada para control de tiempo</p>
+                    </div>
                 @endif
             </div>
         </div>
@@ -102,8 +160,9 @@
                     <i class="bi bi-cup-hot me-2"></i>
                     Rondas del Pedido ({{ $pedido->rondas->count() }})
                 </h6>
-                <button class="btn btn-dark btn-sm" data-bs-toggle="modal" 
-                        data-bs-target="#nuevaRondaModal{{ $pedido->id }}">
+                <button class="btn btn-success btn-sm" data-bs-toggle="modal" 
+                        data-bs-target="#crearRondaModal"
+                        onclick="setPedidoId({{ $pedido->id }})">
                     <i class="bi bi-plus me-1"></i>
                     Agregar Ronda
                 </button>

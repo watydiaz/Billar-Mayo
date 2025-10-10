@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RondaController;
 
 // Dashboard principal
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -41,8 +42,14 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/pedidos', [App\Http\Controllers\PedidoController::class, 'index'])->name('pedidos.index');
     Route::post('/pedidos', [App\Http\Controllers\PedidoController::class, 'store'])->name('pedidos.store');
-    Route::post('/pedidos/{pedido}/iniciar-tiempo', [App\Http\Controllers\PedidoController::class, 'iniciarTiempo'])->name('pedidos.iniciar-tiempo');
-    Route::post('/pedidos/{pedido}/finalizar-tiempo', [App\Http\Controllers\PedidoController::class, 'finalizarTiempo'])->name('pedidos.finalizar-tiempo');
     Route::post('/pedidos/{pedido}/agregar-ronda', [App\Http\Controllers\PedidoController::class, 'agregarRonda'])->name('pedidos.agregar-ronda');
     Route::delete('/pedidos/{pedido}', [App\Http\Controllers\PedidoController::class, 'eliminar'])->name('pedidos.eliminar');
+    
+    // Rutas de rondas dentro de pedidos
+    Route::post('/pedidos/{pedido}/rondas/{ronda}/asignar-mesa', [App\Http\Controllers\PedidoController::class, 'asignarMesaRonda'])->name('pedidos.rondas.asignar-mesa');
+    Route::post('/pedidos/{pedido}/rondas/{ronda}/iniciar-tiempo', [App\Http\Controllers\PedidoController::class, 'iniciarTiempoRonda'])->name('pedidos.rondas.iniciar-tiempo');
+    Route::post('/pedidos/{pedido}/rondas/{ronda}/finalizar-tiempo', [App\Http\Controllers\PedidoController::class, 'finalizarTiempoRonda'])->name('pedidos.rondas.finalizar-tiempo');
+    Route::post('/pedidos/{pedido}/rondas/{ronda}/asignar-responsable', [App\Http\Controllers\PedidoController::class, 'asignarResponsable'])->name('pedidos.rondas.asignar-responsable');
+    Route::get('/pedidos/{pedido}/rondas/{ronda}/tiempo-real', [App\Http\Controllers\PedidoController::class, 'tiempoRealRonda'])->name('pedidos.rondas.tiempo-real');
+
 });

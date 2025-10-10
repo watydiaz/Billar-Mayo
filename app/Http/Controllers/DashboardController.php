@@ -15,11 +15,11 @@ class DashboardController extends Controller
         $estadisticas = [
             'pedidos_activos' => Pedido::where('estado', '1')->count(),
             'mesas_ocupadas' => Mesa::whereHas('mesaAlquileres', function($query) {
-                $query->whereIn('estado', ['activo', 'en_proceso', 'reservado']);
+                $query->where('estado', 'activo');
             })->count(),
             'mesas_disponibles' => Mesa::where('activa', true)
                 ->whereDoesntHave('mesaAlquileres', function($query) {
-                    $query->whereIn('estado', ['activo', 'en_proceso', 'reservado']);
+                    $query->where('estado', 'activo');
                 })->count(),
             'total_mesas' => Mesa::where('activa', true)->count(),
             'ingresos_dia' => Pedido::where('estado', '1')
@@ -37,7 +37,7 @@ class DashboardController extends Controller
 
         // Mesas con estado actual
         $mesasEstado = Mesa::with(['mesaAlquileres' => function($query) {
-            $query->whereIn('estado', ['activo', 'en_proceso', 'reservado'])
+            $query->where('estado', 'activo')
                   ->orderBy('created_at', 'desc');
         }])->where('activa', true)->get();
 

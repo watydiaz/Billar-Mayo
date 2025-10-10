@@ -61,7 +61,7 @@ class Pedido extends Model
 
     public function mesaAlquilerActivo()
     {
-        return $this->mesaAlquiler()->whereIn('estado', ['activo', 'en_proceso'])->first();
+        return $this->mesaAlquileres()->where('estado', 'activo')->first();
     }
 
     public function getMesaAttribute()
@@ -84,13 +84,40 @@ class Pedido extends Model
             return 0;
         }
         
-        return $alquiler->tiempo_transcurrido;
+        // Calcular tiempo transcurrido desde la fecha de inicio hasta ahora
+        return $alquiler->fecha_inicio->diffInMinutes(now());
     }
 
     public function getTiempoInicioAttribute()
     {
         $alquiler = $this->mesaAlquilerActivo();
         return $alquiler ? $alquiler->fecha_inicio : null;
+    }
+
+    // Cálculo de costo actual del tiempo
+    public function getCostoTiempoActualAttribute()
+    {
+        $alquiler = $this->mesaAlquilerActivo();
+        if (!$alquiler || !$alquiler->fecha_inicio) {
+            return 0;
+        }
+
+        $minutosTranscurridos = $this->tiempo_transcurrido;
+        $costoPorMinuto = $alquiler->precio_hora_aplicado / 60;
+        
+        return $minutosTranscurridos * $costoPorMinuto;
+    }
+
+    // Debug method
+    public function debug()
+    {
+        $alquiler = $this->mesaAlquilerActivo();
+        return [
+            'pedido_id' => $this->id,
+            'alquileres_count' => $this->mesaAlquileres->count(),
+            'alquiler_activo' => $alquiler ? $alquiler->toArray() : null,
+            'mesa' => $alquiler && $alquiler->mesa ? $alquiler->mesa->toArray() : null
+        ];
     }
 
     public function getEstadoBadgeAttribute()

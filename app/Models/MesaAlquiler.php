@@ -46,6 +46,28 @@ class MesaAlquiler extends Model
         return $this->belongsTo(Mesa::class);
     }
 
+    // Accessors para estado
+    public function getEstadoTextoAttribute()
+    {
+        return match($this->estado) {
+            'activo' => 'Activo',
+            'terminado' => 'Terminado',  // Corregido
+            'pausado' => 'Pausado',
+            default => 'Desconocido'
+        };
+    }
+
+    // Scopes para consultas
+    public function scopeActivos($query)
+    {
+        return $query->where('estado', 'activo');
+    }
+
+    public function scopeFinalizados($query)
+    {
+        return $query->where('estado', 'terminado');  // Corregido
+    }
+
     // Métodos auxiliares
     public function getTiempoTranscurridoAttribute()
     {

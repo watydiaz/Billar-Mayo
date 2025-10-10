@@ -1,24 +1,99 @@
-*.log
-.DS_Store
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+# Laravel Framework
+/vendor
 /node_modules
-/public/build
 /public/hot
+/public/build
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+
+# Environment files
+.env
+.env.backup
+.env.production
+.env.local
+.env.testing
+
+# Laravel specific
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitkeep
+/storage/framework/cache/*
+!/storage/framework/cache/.gitkeep
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
+/storage/framework/testing/*
+!/storage/framework/testing/.gitkeep
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Composer
+/auth.json
+
+# NPM/Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# IDE & Editor files
+/.vscode
+/.idea
+/.fleet
+/.nova
+/.zed
+/.phpunit.cache
+.phpactor.json
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+
+# Logs
+*.log
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+
+# Laravel Mix/Vite
+/public/css
+/public/js
+/public/mix-manifest.json
+
+# Local development
 Homestead.json
 Homestead.yaml
-Thumbs.db
+.vagrant/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Backup files
+*.backup
+*.bak
+*.sql
+*.dump
+
+# Terkkos Billiards Club specific
+/storage/app/uploads/*
+!/storage/app/uploads/.gitkeep
+/public/uploads/*
+!/public/uploads/.gitkeep
+/storage/app/reports/*
+!/storage/app/reports/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp

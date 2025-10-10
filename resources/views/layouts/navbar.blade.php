@@ -28,8 +28,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark fw-semibold" href="{{ route('pedidos.index') }}">
-                        <i class="bi bi-receipt me-1"></i>Pedidos
+                    <a class="nav-link text-dark fw-semibold {{ request()->routeIs('pedidos.*') ? 'active' : '' }}" href="{{ route('pedidos.index') }}">
+                        <i class="bi bi-receipt me-1"></i>Pedidos y Rondas
                     </a>
                 </li>
                 <li class="nav-item">

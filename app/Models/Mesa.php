@@ -51,10 +51,28 @@ class Mesa extends Model
         return $this->hasMany(MesaAlquiler::class);
     }
 
+    // Relación con MesaRondas (nueva estructura)
+    public function mesaRondas(): HasMany
+    {
+        return $this->hasMany(MesaRonda::class);
+    }
+
     // Alquiler activo en la mesa
     public function alquilerActivo()
     {
-        return $this->mesaAlquileres()->whereIn('estado', ['activo', 'en_proceso', 'reservado'])->first();
+        return $this->mesaAlquileres()->where('estado', 'activo')->first();
+    }
+
+    // Ronda activa en la mesa (nueva estructura)
+    public function rondaActiva()
+    {
+        return $this->mesaRondas()->where('estado', 'activo')->first();
+    }
+
+    // Precio por minuto para cálculo de tiempo
+    public function getPrecioPorMinutoAttribute()
+    {
+        return $this->precio_hora / 60;
     }
 
     // Pedido activo en la mesa (compatibilidad)
@@ -71,8 +89,8 @@ class Mesa extends Model
         
         if ($alquilerActivo) {
             return match($alquilerActivo->estado) {
-                'activo', 'en_proceso' => 'bg-danger', // Ocupada
-                'reservado' => 'bg-warning', // Reservada
+                'activo' => 'bg-warning', // Ocupada/Reservada
+                'pausado' => 'bg-info', // Pausada
                 default => 'bg-success'
             };
         }
@@ -86,8 +104,8 @@ class Mesa extends Model
         
         if ($alquilerActivo) {
             return match($alquilerActivo->estado) {
-                'activo', 'en_proceso' => 'Ocupada',
-                'reservado' => 'Reservada',
+                'activo' => 'Ocupada',
+                'pausado' => 'Pausada', 
                 default => 'Disponible'
             };
         }

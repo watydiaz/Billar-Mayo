@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gestión de Pedidos')
+@section('title', 'Gestión de Pedidos y Rondas')
 
 @section('main-class', 'container-fluid')
 
@@ -13,9 +13,9 @@
                 <div>
                     <h2 class="mb-1">
                         <i class="bi bi-receipt text-primary me-2"></i>
-                        Gestión de Pedidos
+                        Gestión de Pedidos y Rondas
                     </h2>
-                    <p class="text-muted mb-0">Control de pedidos y alquileres de mesas</p>
+                    <p class="text-muted mb-0">Control de pedidos con rondas y tiempo de mesa</p>
                 </div>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoPedidoModal">
                     <i class="bi bi-plus-circle me-2"></i>
@@ -33,7 +33,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-uppercase fw-bold mb-1">Pedidos Activos</h6>
-                            <h3 class="mb-0">{{ $pedidos->where('estado', '1')->count() }}</h3>
+                            <h3 class="mb-0">{{ $pedidos->count() }}</h3>
                         </div>
                         <i class="bi bi-receipt" style="font-size: 2rem; opacity: 0.7;"></i>
                     </div>
@@ -45,10 +45,10 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">En Mesa</h6>
-                            <h3 class="mb-0">{{ $pedidos->where('estado', 'en_mesa')->count() }}</h3>
+                            <h6 class="text-uppercase fw-bold mb-1">Total Rondas</h6>
+                            <h3 class="mb-0">{{ $pedidos->sum(function($p) { return $p->rondas->count(); }) }}</h3>
                         </div>
-                        <i class="bi bi-grid-3x3-gap" style="font-size: 2rem; opacity: 0.7;"></i>
+                        <i class="bi bi-stopwatch" style="font-size: 2rem; opacity: 0.7;"></i>
                     </div>
                 </div>
             </div>
@@ -58,10 +58,10 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Total Rondas</h6>
-                            <h3 class="mb-0">{{ $pedidos->sum(function($p) { return $p->rondas->count(); }) }}</h3>
+                            <h6 class="text-uppercase fw-bold mb-1">Tiempo Activo</h6>
+                            <h3 class="mb-0">{{ $pedidos->flatMap(function($p) { return $p->rondas; })->filter(function($r) { return $r->mesaRonda && $r->mesaRonda->isActivo(); })->count() }}</h3>
                         </div>
-                        <i class="bi bi-cup-hot" style="font-size: 2rem; opacity: 0.7;"></i>
+                        <i class="bi bi-play-circle" style="font-size: 2rem; opacity: 0.7;"></i>
                     </div>
                 </div>
             </div>
@@ -71,8 +71,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-uppercase fw-bold mb-1">Ingresos</h6>
-                            <h3 class="mb-0">${{ number_format($pedidos->sum('total'), 0, ',', '.') }}</h3>
+                            <h6 class="text-uppercase fw-bold mb-1">Total Ingresos</h6>
+                            <h3 class="mb-0">${{ number_format($pedidos->sum('total_pedido'), 0, ',', '.') }}</h3>
                         </div>
                         <i class="bi bi-currency-dollar" style="font-size: 2rem; opacity: 0.7;"></i>
                     </div>
@@ -81,113 +81,252 @@
         </div>
     </div>
 
-    <!-- Pedidos Activos en Acordeones -->
+    <!-- Pedidos con Rondas -->
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <div class="card-header bg-light">
                     <h5 class="mb-0">
                         <i class="bi bi-list-ul me-2"></i>
                         Pedidos Activos ({{ $pedidos->count() }})
                     </h5>
-                    @if($pedidos->count() > 0)
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-outline-secondary" onclick="expandirTodos()">
-                                <i class="bi bi-arrows-expand me-1"></i>
-                                Expandir Todos
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="contraerTodos()">
-                                <i class="bi bi-arrows-collapse me-1"></i>
-                                Contraer Todos
-                            </button>
-                        </div>
-                    @endif
                 </div>
                 <div class="card-body">
-                    @if($pedidos->isEmpty())
-                        <div class="text-center py-5">
-                            <div class="bg-light rounded-circle mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
-                            </div>
-                            <h4 class="text-muted">No hay pedidos activos</h4>
-                            <p class="text-muted mb-4">Crea un nuevo pedido para comenzar a gestionar las mesas</p>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoPedidoModal">
-                                <i class="bi bi-plus-circle me-2"></i>Crear Primer Pedido
-                            </button>
-                        </div>
-                    @else
+                    @if($pedidos->count() > 0)
                         <div class="accordion" id="pedidosAccordion">
                             @foreach($pedidos as $pedido)
-                                <div class="accordion-item mb-3 border-0 shadow-sm rounded-3">
+                                <div class="accordion-item mb-3 border rounded">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed rounded-3 bg-light border-0" type="button" 
-                                                data-bs-toggle="collapse" 
-                                                data-bs-target="#pedido{{ $pedido->id }}" 
-                                                aria-expanded="false"
-                                                style="box-shadow: none;">
-                                            <div class="d-flex w-100 justify-content-between align-items-center me-3">
-                                                <!-- Información del cliente -->
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pedido{{ $pedido->id }}" aria-expanded="false">
+                                            <div class="d-flex justify-content-between align-items-center w-100 me-3">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-white rounded-circle p-2 me-3 shadow-sm">
-                                                        <i class="bi bi-person-fill text-primary"></i>
-                                                    </div>
+                                                    <i class="bi bi-person-fill text-primary me-2"></i>
                                                     <div>
-                                                        <h6 class="mb-1 fw-bold text-dark">{{ $pedido->nombre_cliente }}</h6>
-                                                        <small class="text-muted">
-                                                            <i class="bi bi-hash me-1"></i>{{ $pedido->numero_pedido }}
-                                                        </small>
+                                                        <strong>{{ $pedido->nombre_cliente }}</strong>
+                                                        <small class="text-muted ms-2">{{ $pedido->numero_pedido }}</small>
                                                         <br>
-                                                        <small class="text-muted">
-                                                            <i class="bi bi-clock me-1"></i>{{ $pedido->created_at->format('d/m/Y H:i') }}
-                                                        </small>
+                                                        <small class="text-muted">{{ $pedido->created_at->format('d/m/Y H:i') }}</small>
                                                     </div>
                                                 </div>
-
-                                                <!-- Mesa asignada -->
-                                                <div class="text-center">
-                                                    @if($pedido->mesa)
-                                                        <div class="bg-success text-white rounded-pill px-3 py-2">
-                                                            <i class="bi bi-table me-1"></i>
-                                                            <strong>Mesa {{ $pedido->mesa->numero_mesa ?? $pedido->mesa->id }}</strong>
-                                                        </div>
-                                                    @else
-                                                        <div class="bg-warning text-dark rounded-pill px-3 py-2">
-                                                            <i class="bi bi-exclamation-triangle me-1"></i>
-                                                            <strong>Sin mesa</strong>
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <!-- Estado y tiempo -->
-                                                <div class="text-center">
-                                                    <span class="badge {{ $pedido->estado_badge }} px-3 py-2 mb-1">
-                                                        {{ $pedido->estado_texto }}
-                                                    </span>
-                                                    @if($pedido->tiempo_inicio)
-                                                        <div class="small">
-                                                            <i class="bi bi-stopwatch text-info"></i>
-                                                            <strong data-tiempo-inicio="{{ $pedido->tiempo_inicio }}">{{ $pedido->tiempo_transcurrido }} min</strong>
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <!-- Total -->
-                                                <div class="text-end">
-                                                    <div class="bg-success text-white rounded-pill px-3 py-2">
-                                                        <i class="bi bi-cash me-1"></i>
-                                                        <strong>${{ number_format($pedido->total, 0, ',', '.') }}</strong>
-                                                    </div>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-primary me-2">{{ $pedido->rondas->count() }} rondas</span>
+                                                    <span class="text-success fw-bold">${{ number_format($pedido->total_pedido, 0, ',', '.') }}</span>
                                                 </div>
                                             </div>
                                         </button>
                                     </h2>
-                                    <div id="pedido{{ $pedido->id }}" class="accordion-collapse collapse">
-                                        <div class="accordion-body bg-white rounded-bottom-3 border-top">
-                                            @include('pedidos.detalle', ['pedido' => $pedido])
+                                    <div id="pedido{{ $pedido->id }}" class="accordion-collapse collapse" data-bs-parent="#pedidosAccordion">
+                                        <div class="accordion-body">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <!-- Pestañas de Rondas -->
+                                                    @if($pedido->rondas->count() > 0)
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <ul class="nav nav-tabs card-header-tabs" id="rondas{{ $pedido->id }}" role="tablist">
+                                                                    @foreach($pedido->rondas as $index => $ronda)
+                                                                        <li class="nav-item" role="presentation">
+                                                                            <button class="nav-link {{ $index === 0 ? 'active' : '' }}" 
+                                                                                    id="ronda{{ $ronda->id }}-tab" 
+                                                                                    data-bs-toggle="tab" 
+                                                                                    data-bs-target="#ronda{{ $ronda->id }}" 
+                                                                                    type="button" role="tab">
+                                                                                Ronda {{ $ronda->numero_ronda }}
+                                                                                @if($ronda->mesaRonda && $ronda->mesaRonda->isActivo())
+                                                                                    <span class="badge bg-warning ms-1">ACTIVA</span>
+                                                                                @endif
+                                                                            </button>
+                                                                        </li>
+                                                                    @endforeach
+                                                                    <li class="nav-item">
+                                                                        <button class="nav-link" data-bs-toggle="modal" data-bs-target="#nuevaRondaModal{{ $pedido->id }}">
+                                                                            <i class="bi bi-plus-circle me-1"></i>Nueva
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class="tab-content">
+                                                                    @foreach($pedido->rondas as $index => $ronda)
+                                                                        <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" 
+                                                                             id="ronda{{ $ronda->id }}" 
+                                                                             role="tabpanel">
+                                                                            
+                                                                            <!-- Información de la Ronda -->
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-md-6">
+                                                                                    <h6><i class="bi bi-info-circle text-primary me-1"></i> Información</h6>
+                                                                                    <p class="mb-1"><strong>Número:</strong> Ronda {{ $ronda->numero_ronda }}</p>
+                                                                                    @if($ronda->responsable)
+                                                                                        <p class="mb-1"><strong>Responsable:</strong> {{ $ronda->responsable }}</p>
+                                                                                    @endif
+                                                                                    <p class="mb-1"><strong>Estado:</strong> 
+                                                                                        <span class="badge {{ $ronda->estado == 'activa' ? 'bg-success' : ($ronda->estado == 'pagada' ? 'bg-primary' : 'bg-secondary') }}">
+                                                                                            {{ ucfirst($ronda->estado) }}
+                                                                                        </span>
+                                                                                    </p>
+                                                                                    <p class="mb-0"><strong>Total:</strong> ${{ number_format($ronda->total_ronda, 0, ',', '.') }}</p>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    @if($ronda->mesaRonda && $ronda->mesaRonda->mesa)
+                                                                                        <h6><i class="bi bi-grid-3x3-gap text-success me-1"></i> Mesa Asignada</h6>
+                                                                                        <p class="mb-1"><strong>Mesa:</strong> {{ $ronda->mesaRonda->mesa->numero_mesa }}</p>
+                                                                                        <p class="mb-0"><strong>Estado:</strong> 
+                                                                                            <span class="badge bg-{{ $ronda->mesaRonda->estado === 'activo' ? 'success' : ($ronda->mesaRonda->estado === 'pendiente' ? 'warning' : 'secondary') }}">
+                                                                                                {{ ucfirst($ronda->mesaRonda->estado) }}
+                                                                                            </span>
+                                                                                        </p>
+                                                                                    @else
+                                                                                        <h6><i class="bi bi-exclamation-triangle text-warning me-1"></i> Sin Mesa</h6>
+                                                                                        <p class="text-muted mb-2">No hay mesa asignada a esta ronda</p>
+                                                                                        <form method="POST" action="{{ route('pedidos.rondas.asignar-mesa', [$pedido, $ronda]) }}" class="d-flex">
+                                                                                            @csrf
+                                                                                            <select name="mesa_id" class="form-select form-select-sm me-2" required>
+                                                                                                <option value="">Seleccionar mesa...</option>
+                                                                                                @foreach($mesas as $mesa)
+                                                                                                    <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_mesa }}</option>
+                                                                                                @endforeach
+                                                                                            </select>
+                                                                                            <button type="submit" class="btn btn-sm btn-outline-primary">Asignar</button>
+                                                                                        </form>
+                                                                                    @endif
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <!-- Control de Tiempo -->
+                                                                            @if($ronda->mesaRonda)
+                                                                                @if($ronda->mesaRonda->isActivo())
+                                                                                    <!-- Tiempo Activo -->
+                                                                                    <div class="alert alert-warning">
+                                                                                        <div class="row align-items-center">
+                                                                                            <div class="col-md-6">
+                                                                                                <h6><i class="bi bi-stopwatch text-warning me-1"></i> Tiempo Activo</h6>
+                                                                                                <div class="display-6 text-success timer" data-pedido-id="{{ $pedido->id }}" data-ronda-id="{{ $ronda->id }}">00:00:00</div>
+                                                                                                <small class="text-muted">Tiempo transcurrido</small>
+                                                                                            </div>
+                                                                                            <div class="col-md-6 text-center">
+                                                                                                <div class="h5 text-warning costo-tiempo" data-pedido-id="{{ $pedido->id }}" data-ronda-id="{{ $ronda->id }}">$0</div>
+                                                                                                <small class="text-muted">Costo actual</small>
+                                                                                                <br><br>
+                                                                                                <form method="POST" action="{{ route('pedidos.rondas.finalizar-tiempo', [$pedido, $ronda]) }}" class="d-inline">
+                                                                                                    @csrf
+                                                                                                    <button type="submit" class="btn btn-danger">
+                                                                                                        <i class="bi bi-stop-circle me-1"></i>
+                                                                                                        Finalizar Tiempo
+                                                                                                    </button>
+                                                                                                </form>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                @elseif($ronda->mesaRonda->estado === 'pendiente')
+                                                                                    <!-- Mesa asignada, tiempo no iniciado -->
+                                                                                    <div class="alert alert-info text-center">
+                                                                                        <i class="bi bi-play-circle text-info" style="font-size: 3rem;"></i>
+                                                                                        <h6 class="mt-2">Mesa {{ $ronda->mesaRonda->mesa->numero_mesa }} lista</h6>
+                                                                                        <form method="POST" action="{{ route('pedidos.rondas.iniciar-tiempo', [$pedido, $ronda]) }}">
+                                                                                            @csrf
+                                                                                            <button type="submit" class="btn btn-success">
+                                                                                                <i class="bi bi-play-circle me-1"></i>
+                                                                                                Iniciar Tiempo
+                                                                                            </button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                @else
+                                                                                    <!-- Tiempo finalizado -->
+                                                                                    <div class="alert alert-success">
+                                                                                        <div class="text-center">
+                                                                                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                                                                                            <h6 class="mt-2">Tiempo Finalizado</h6>
+                                                                                            <p class="mb-1">Duración: {{ $ronda->mesaRonda->duracion_minutos }} minutos</p>
+                                                                                            <p class="mb-3">Costo: ${{ number_format($ronda->mesaRonda->costo_tiempo, 0, ',', '.') }}</p>
+                                                                                        </div>
+                                                                                        
+                                                                                        @if(!$ronda->responsable)
+                                                                                            <!-- Asignar responsable -->
+                                                                                            <div class="border-top pt-3">
+                                                                                                <h6 class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i> Asignar Responsable</h6>
+                                                                                                <p class="small text-muted mb-2">¿Quién perdió en esta ronda?</p>
+                                                                                                <form method="POST" action="{{ route('pedidos.rondas.asignar-responsable', [$pedido, $ronda]) }}" class="d-flex">
+                                                                                                    @csrf
+                                                                                                    <input type="text" name="responsable" class="form-control form-control-sm me-2" placeholder="Nombre del responsable..." required>
+                                                                                                    <button type="submit" class="btn btn-warning btn-sm">
+                                                                                                        <i class="bi bi-check-lg me-1"></i>
+                                                                                                        Asignar
+                                                                                                    </button>
+                                                                                                </form>
+                                                                                            </div>
+                                                                                        @else
+                                                                                            <!-- Responsable ya asignado -->
+                                                                                            <div class="border-top pt-3 text-center">
+                                                                                                <span class="badge bg-primary fs-6">
+                                                                                                    <i class="bi bi-person-check me-1"></i>
+                                                                                                    Responsable: {{ $ronda->responsable }}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        @endif
+                                                                                    </div>
+                                                                                @endif
+                                                                            @endif
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <!-- No hay rondas -->
+                                                        <div class="text-center py-4">
+                                                            <i class="bi bi-stopwatch text-muted" style="font-size: 3rem;"></i>
+                                                            <h6 class="text-muted mt-2">Sin rondas</h6>
+                                                            <p class="text-muted">Este pedido no tiene rondas creadas</p>
+                                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaRondaModal{{ $pedido->id }}">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                Crear Primera Ronda
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <!-- Resumen del Pedido -->
+                                                    <div class="card bg-light">
+                                                        <div class="card-body">
+                                                            <h6 class="text-primary mb-3">
+                                                                <i class="bi bi-receipt me-1"></i>
+                                                                Resumen del Pedido
+                                                            </h6>
+                                                            <div class="mb-3">
+                                                                <p class="mb-1"><strong>Cliente:</strong> {{ $pedido->nombre_cliente }}</p>
+                                                                <p class="mb-1"><strong>Número:</strong> {{ $pedido->numero_pedido }}</p>
+                                                                <p class="mb-1"><strong>Rondas:</strong> {{ $pedido->rondas->count() }}</p>
+                                                                <p class="mb-1"><strong>Total:</strong> <span class="text-success fw-bold">${{ number_format($pedido->total_pedido, 0, ',', '.') }}</span></p>
+                                                                <p class="mb-0"><strong>Estado:</strong> 
+                                                                    <span class="badge bg-success">Activo</span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="d-grid gap-2">
+                                                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#nuevaRondaModal{{ $pedido->id }}">
+                                                                    <i class="bi bi-plus-circle me-1"></i>
+                                                                    Nueva Ronda
+                                                                </button>
+                                                                <button class="btn btn-outline-danger btn-sm">
+                                                                    <i class="bi bi-trash me-1"></i>
+                                                                    Eliminar Pedido
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                            <h5 class="text-muted mt-3">No hay pedidos activos</h5>
+                            <p class="text-muted">Crea un nuevo pedido para comenzar</p>
                         </div>
                     @endif
                 </div>
@@ -200,345 +339,279 @@
 <div class="modal fade" id="nuevoPedidoModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Nuevo Pedido
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center py-5">
-                <p class="text-muted mb-4">¿Qué acción deseas realizar?</p>
-                <button type="button" class="btn btn-primary btn-lg" 
-                        data-bs-dismiss="modal" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#crearRondaModal">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Crear Ronda
-                </button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Crear Ronda -->
-<div class="modal fade" id="crearRondaModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Crear Nueva Ronda
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="crearRondaForm">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="cliente_ronda" class="form-label">
-                                    <i class="bi bi-person me-1"></i>
-                                    Nombre del Cliente
-                                </label>
-                                <input type="text" class="form-control" id="cliente_ronda" 
-                                       name="cliente_ronda" placeholder="Ingresa el nombre del cliente" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="mesa_ronda" class="form-label">
-                                    <i class="bi bi-table me-1"></i>
-                                    Mesa Asignada
-                                </label>
-                                <select class="form-select" id="mesa_ronda" name="mesa_ronda">
-                                    <option value="">Seleccionar mesa...</option>
-                                    @foreach($mesas as $mesa)
-                                        <option value="{{ $mesa->id }}">
-                                            Mesa {{ $mesa->numero_mesa ?? $mesa->id }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    <i class="bi bi-cart me-1"></i>
-                                    Productos Disponibles
-                                </label>
-                                <div class="row">
-                                    @foreach($productos as $producto)
-                                        <div class="col-md-4 mb-3">
-                                            <div class="card h-100 producto-card" style="cursor: pointer;" 
-                                                 onclick="seleccionarProducto({{ $producto->id }}, '{{ $producto->nombre }}', {{ $producto->precio_venta }})">
-                                                <div class="card-body text-center">
-                                                    <i class="bi bi-cup text-primary mb-2" style="font-size: 2rem;"></i>
-                                                    <h6 class="card-title">{{ $producto->nombre }}</h6>
-                                                    <p class="card-text text-success fw-bold">
-                                                        ${{ number_format($producto->precio_venta, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" id="productosSeleccionados" style="display: none;">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    <i class="bi bi-check-circle me-1"></i>
-                                    Productos Seleccionados
-                                </label>
-                                <div id="listaProductos" class="border rounded p-3 bg-light">
-                                    <!-- Productos seleccionados aparecerán aquí -->
-                                </div>
-                                <div class="text-end mt-2">
-                                    <strong>Total: $<span id="totalRonda">0</span></strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <button type="button" class="btn btn-primary" onclick="crearRonda()">
-                    <i class="bi bi-check me-1"></i>
-                    Crear Ronda
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@push('head')
-<style>
-    .accordion-button:not(.collapsed) {
-        background-color: #f8f9fa !important;
-        border-bottom: 1px solid #dee2e6;
-        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .125);
-    }
-    
-    .accordion-button:focus {
-        box-shadow: none !important;
-        border-color: transparent;
-    }
-    
-    .accordion-button {
-        transition: all 0.3s ease;
-    }
-    
-    .accordion-button:hover {
-        background-color: #e9ecef !important;
-    }
-    
-    .accordion-item {
-        transition: all 0.3s ease;
-    }
-    
-    .accordion-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    .badge {
-        font-size: 0.75rem;
-    }
-    
-    .producto-card {
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-    
-    .producto-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border-color: #0d6efd;
-    }
-    
-    .producto-card:active {
-        transform: scale(0.98);
-    }
-</style>
-@endpush
-
-@push('scripts')
-<script>
-function expandirTodos() {
-    const acordeones = document.querySelectorAll('.accordion-collapse');
-    const botones = document.querySelectorAll('.accordion-button');
-    
-    acordeones.forEach(acordeon => {
-        acordeon.classList.add('show');
-    });
-    
-    botones.forEach(boton => {
-        boton.classList.remove('collapsed');
-        boton.setAttribute('aria-expanded', 'true');
-    });
-}
-
-function contraerTodos() {
-    const acordeones = document.querySelectorAll('.accordion-collapse');
-    const botones = document.querySelectorAll('.accordion-button');
-    
-    acordeones.forEach(acordeon => {
-        acordeon.classList.remove('show');
-    });
-    
-    botones.forEach(boton => {
-        boton.classList.add('collapsed');
-        boton.setAttribute('aria-expanded', 'false');
-    });
-}
-
-// Variables para manejar productos seleccionados
-let productosSeleccionados = [];
-let totalRonda = 0;
-
-// Función para seleccionar productos
-function seleccionarProducto(id, nombre, precio) {
-    const productoExistente = productosSeleccionados.find(p => p.id === id);
-    
-    if (productoExistente) {
-        productoExistente.cantidad++;
-    } else {
-        productosSeleccionados.push({
-            id: id,
-            nombre: nombre,
-            precio: precio,
-            cantidad: 1
-        });
-    }
-    
-    actualizarListaProductos();
-}
-
-// Función para actualizar la lista de productos seleccionados
-function actualizarListaProductos() {
-    const contenedor = document.getElementById('listaProductos');
-    const seccionProductos = document.getElementById('productosSeleccionados');
-    
-    if (productosSeleccionados.length === 0) {
-        seccionProductos.style.display = 'none';
-        return;
-    }
-    
-    seccionProductos.style.display = 'block';
-    
-    let html = '';
-    totalRonda = 0;
-    
-    productosSeleccionados.forEach((producto, index) => {
-        const subtotal = producto.precio * producto.cantidad;
-        totalRonda += subtotal;
-        
-        html += `
-            <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded">
-                <div>
-                    <strong>${producto.nombre}</strong>
-                    <small class="text-muted">($${producto.precio.toLocaleString()})</small>
+            <form method="POST" action="{{ route('pedidos.store') }}">
+                @csrf
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Nuevo Pedido
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="d-flex align-items-center">
-                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" 
-                            onclick="cambiarCantidad(${index}, -1)">-</button>
-                    <span class="mx-2"><strong>${producto.cantidad}</strong></span>
-                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" 
-                            onclick="cambiarCantidad(${index}, 1)">+</button>
-                    <span class="text-success fw-bold me-2">$${subtotal.toLocaleString()}</span>
-                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                            onclick="eliminarProducto(${index})">
-                        <i class="bi bi-trash"></i>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Cliente</label>
+                        <input type="text" name="nombre_cliente" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>
+                        Crear Pedido
                     </button>
                 </div>
-            </div>
-        `;
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modales Nueva Ronda (uno por cada pedido) -->
+@foreach($pedidos as $pedido)
+<div class="modal fade" id="nuevaRondaModal{{ $pedido->id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('pedidos.agregar-ronda', $pedido) }}">
+                @csrf
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Nueva Ronda - {{ $pedido->nombre_cliente }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>¿Crear nueva ronda?</strong>
+                        <br>
+                        <small>El responsable se asignará al finalizar el tiempo (quien pierda)</small>
+                    </div>
+                    <p class="text-center mb-3">
+                        Se creará: <strong>Ronda {{ ($pedido->rondas()->max('numero_ronda') ?? 0) + 1 }}</strong>
+                    </p>
+                    
+                    <!-- Opción de Mesa -->
+                    <div class="mb-3">
+                        <label class="form-label">Mesa (Opcional)</label>
+                        <select name="mesa_id" class="form-select" id="mesaSelect{{ $pedido->id }}">
+                            <option value="">Sin mesa - Asignar después</option>
+                            @foreach($mesas as $mesa)
+                                @php
+                                    $mesaOcupada = false;
+                                    // Verificar si la mesa está ocupada en cualquier ronda activa
+                                    foreach($pedidos as $p) {
+                                        foreach($p->rondas as $r) {
+                                            if($r->mesaRonda && $r->mesaRonda->mesa_id == $mesa->id && $r->mesaRonda->estado == 'activo') {
+                                                $mesaOcupada = true;
+                                                break 2;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @if(!$mesaOcupada)
+                                    <option value="{{ $mesa->id }}">Mesa {{ $mesa->numero_mesa }} - ${{ number_format($mesa->precio_hora, 0, ',', '.') }}/hora</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <small class="form-text text-muted">Si seleccionas una mesa, el tiempo iniciará automáticamente</small>
+                    </div>
+                    
+                    <!-- Opción de iniciar tiempo -->
+                    <div class="form-check" id="iniciarTiempoCheck{{ $pedido->id }}" style="display: none;">
+                        <input class="form-check-input" type="checkbox" name="iniciar_tiempo" value="1" id="iniciarTiempo{{ $pedido->id }}" checked>
+                        <label class="form-check-label" for="iniciarTiempo{{ $pedido->id }}">
+                            <i class="bi bi-play-circle text-success me-1"></i>
+                            <strong>Iniciar tiempo inmediatamente</strong>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg me-1"></i>
+                        Crear Ronda
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
+@endsection
+
+@section('scripts')
+<script>
+console.log('🚀 Iniciando sistema de timers...');
+
+// Función simple para probar si el JavaScript funciona
+function testTimers() {
+    console.log('🔍 Buscando timers...');
+    const timers = document.querySelectorAll('.timer');
+    console.log(`✅ Encontrados ${timers.length} timers`);
+    
+    timers.forEach((timer, index) => {
+        const pedidoId = timer.getAttribute('data-pedido-id');
+        const rondaId = timer.getAttribute('data-ronda-id');
+        console.log(`🎯 Timer ${index + 1}: Pedido=${pedidoId}, Ronda=${rondaId}`);
+        
+        // Probar si podemos encontrar el elemento de costo
+        const costoElement = document.querySelector(`.costo-tiempo[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
+        console.log(`💰 Elemento costo ${index + 1}:`, costoElement);
+        
+        // Hacer una prueba manual del API
+        if (pedidoId && rondaId) {
+            const url = `/pedidos/${pedidoId}/rondas/${rondaId}/tiempo-real`;
+            console.log(`🌐 Probando API: ${url}`);
+            
+            fetch(url)
+                .then(response => {
+                    console.log(`📡 Respuesta ${index + 1}: Status ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`📊 Datos ${index + 1}:`, data);
+                    
+                    if (data.activo) {
+                        console.log(`⏰ Timer ${index + 1} ESTÁ ACTIVO!`);
+                        
+                        // Intentar actualizar manualmente
+                        timer.textContent = `PRUEBA: ${data.duracion_segundos}s`;
+                        
+                        if (costoElement) {
+                            costoElement.textContent = `PRUEBA: $${Math.round(data.costo)}`;
+                        }
+                    } else {
+                        console.log(`😴 Timer ${index + 1} no está activo`);
+                        timer.textContent = '00:00:00';
+                        if (costoElement) {
+                            costoElement.textContent = '$0';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error(`❌ Error en timer ${index + 1}:`, error);
+                });
+        }
     });
-    
-    contenedor.innerHTML = html;
-    document.getElementById('totalRonda').textContent = totalRonda.toLocaleString();
 }
 
-// Función para cambiar cantidad
-function cambiarCantidad(index, cambio) {
-    productosSeleccionados[index].cantidad += cambio;
-    
-    if (productosSeleccionados[index].cantidad <= 0) {
-        productosSeleccionados.splice(index, 1);
-    }
-    
-    actualizarListaProductos();
+// Función para formatear tiempo
+function formatearTiempo(segundos) {
+    const horas = Math.floor(segundos / 3600);
+    const mins = Math.floor((segundos % 3600) / 60);
+    const segs = segundos % 60;
+    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
 }
 
-// Función para eliminar producto
-function eliminarProducto(index) {
-    productosSeleccionados.splice(index, 1);
-    actualizarListaProductos();
-}
+// Sistema de timers activos
+let timersActivos = {};
 
-// Función para crear la ronda
-function crearRonda() {
-    const cliente = document.getElementById('cliente_ronda').value;
-    const mesa = document.getElementById('mesa_ronda').value;
-    
-    if (!cliente.trim()) {
-        alert('Por favor ingresa el nombre del cliente');
-        return;
-    }
-    
-    if (productosSeleccionados.length === 0) {
-        alert('Por favor selecciona al menos un producto');
-        return;
-    }
-    
-    // Aquí iría la lógica para enviar los datos al servidor
-    console.log('Datos de la ronda:', {
-        cliente: cliente,
-        mesa: mesa,
-        productos: productosSeleccionados,
-        total: totalRonda
+// Función para actualizar timers
+function actualizarTimers() {
+    Object.keys(timersActivos).forEach(timerKey => {
+        const [pedidoId, rondaId] = timerKey.split('-');
+        const timerData = timersActivos[timerKey];
+        
+        // Calcular tiempo transcurrido
+        const ahora = Math.floor(Date.now() / 1000);
+        const transcurrido = ahora - timerData.inicio;
+        
+        // Actualizar display
+        const timerElement = document.querySelector(`.timer[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
+        if (timerElement) {
+            timerElement.textContent = formatearTiempo(transcurrido);
+        }
+        
+        // Actualizar costo
+        const costoElement = document.querySelector(`.costo-tiempo[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
+        if (costoElement) {
+            const minutos = transcurrido / 60;
+            const costo = Math.round(minutos * timerData.precioPorMinuto);
+            costoElement.textContent = `$${costo.toLocaleString('es-CO')}`;
+        }
     });
-    
-    // Por ahora solo mostramos un mensaje de éxito
-    alert(`Ronda creada exitosamente para ${cliente}. Total: $${totalRonda.toLocaleString()}`);
-    
-    // Limpiar formulario y cerrar modal
-    document.getElementById('crearRondaForm').reset();
-    productosSeleccionados = [];
-    totalRonda = 0;
-    actualizarListaProductos();
-    
-    // Cerrar modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('crearRondaModal'));
-    modal.hide();
 }
 
-// Auto-refresh cada 30 segundos para actualizar tiempos
-setInterval(function() {
-    const tiempos = document.querySelectorAll('[data-tiempo-inicio]');
-    tiempos.forEach(tiempo => {
-        const inicio = new Date(tiempo.dataset.tiempoInicio);
-        const ahora = new Date();
-        const transcurrido = Math.floor((ahora - inicio) / 1000 / 60);
-        tiempo.textContent = transcurrido + ' min';
+// Sincronizar con servidor
+function sincronizar() {
+    console.log('🔄 Sincronizando con servidor...');
+    
+    document.querySelectorAll('.timer').forEach(timer => {
+        const pedidoId = timer.getAttribute('data-pedido-id');
+        const rondaId = timer.getAttribute('data-ronda-id');
+        
+        if (!pedidoId || !rondaId) return;
+        
+        fetch(`/pedidos/${pedidoId}/rondas/${rondaId}/tiempo-real`)
+            .then(response => response.json())
+            .then(data => {
+                const timerKey = `${pedidoId}-${rondaId}`;
+                
+                if (data.activo) {
+                    console.log(`✅ Timer activo: ${timerKey}`, data);
+                    timersActivos[timerKey] = {
+                        inicio: data.inicio_timestamp,
+                        precioPorMinuto: data.precio_por_minuto
+                    };
+                } else {
+                    console.log(`❌ Timer inactivo: ${timerKey}`);
+                    delete timersActivos[timerKey];
+                    timer.textContent = '00:00:00';
+                    
+                    const costoElement = document.querySelector(`.costo-tiempo[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
+                    if (costoElement) {
+                        costoElement.textContent = '$0';
+                    }
+                }
+            })
+            .catch(error => console.error(`❌ Error: ${timerKey}`, error));
     });
-}, 30000);
+}
+
+// Manejar modales
+function configurarModales() {
+    document.querySelectorAll('[id^="mesaSelect"]').forEach(select => {
+        const pedidoId = select.id.replace('mesaSelect', '');
+        const checkDiv = document.getElementById(`iniciarTiempoCheck${pedidoId}`);
+        
+        if (checkDiv) {
+            select.addEventListener('change', function() {
+                checkDiv.style.display = this.value ? 'block' : 'none';
+            });
+        }
+    });
+}
+
+// Inicializar todo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 DOM cargado, inicializando...');
+    
+    // Probar inmediatamente
+    setTimeout(testTimers, 500);
+    
+    // Configurar sistema real
+    setTimeout(() => {
+        sincronizar();
+        configurarModales();
+        
+        // Actualizar cada segundo
+        setInterval(actualizarTimers, 1000);
+        
+        // Sincronizar cada 30 segundos
+        setInterval(sincronizar, 30000);
+        
+        console.log('🎉 Sistema de timers inicializado correctamente');
+    }, 1000);
+});
+
+// Refrescar después de acciones
+document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (form.action && form.action.includes('tiempo')) {
+        setTimeout(sincronizar, 2000);
+    }
+});
 </script>
-@endpush
-
 @endsection
