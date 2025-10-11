@@ -97,7 +97,7 @@
                             @foreach($pedidos as $pedido)
                                 <div class="accordion-item mb-3 border rounded">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pedido{{ $pedido->id }}" aria-expanded="false">
+                                        <button class="accordion-button {{ session('nuevo_pedido_id') == $pedido->id ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#pedido{{ $pedido->id }}" aria-expanded="{{ session('nuevo_pedido_id') == $pedido->id ? 'true' : 'false' }}">
                                             <div class="d-flex justify-content-between align-items-center w-100 me-3">
                                                 <div class="d-flex align-items-center">
                                                     <i class="bi bi-person-fill text-primary me-2"></i>
@@ -115,7 +115,7 @@
                                             </div>
                                         </button>
                                     </h2>
-                                    <div id="pedido{{ $pedido->id }}" class="accordion-collapse collapse" data-bs-parent="#pedidosAccordion">
+                                    <div id="pedido{{ $pedido->id }}" class="accordion-collapse collapse {{ session('nuevo_pedido_id') == $pedido->id ? 'show' : '' }}" data-bs-parent="#pedidosAccordion">
                                         <div class="accordion-body">
                                             <div class="row">
                                                 <div class="col-md-8">
@@ -126,7 +126,7 @@
                                                                 <ul class="nav nav-tabs card-header-tabs" id="rondas{{ $pedido->id }}" role="tablist">
                                                                     @foreach($pedido->rondas as $index => $ronda)
                                                                         <li class="nav-item" role="presentation">
-                                                                            <button class="nav-link {{ $index === 0 ? 'active' : '' }}" 
+                                                                            <button class="nav-link {{ $index === count($pedido->rondas) - 1 ? 'active' : '' }}" 
                                                                                     id="ronda{{ $ronda->id }}-tab" 
                                                                                     data-bs-toggle="tab" 
                                                                                     data-bs-target="#ronda{{ $ronda->id }}" 
@@ -148,7 +148,7 @@
                                                             <div class="card-body">
                                                                 <div class="tab-content">
                                                                     @foreach($pedido->rondas as $index => $ronda)
-                                                                        <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" 
+                                                                        <div class="tab-pane fade {{ $index === count($pedido->rondas) - 1 ? 'show active' : '' }}" 
                                                                              id="ronda{{ $ronda->id }}" 
                                                                              role="tabpanel">
                                                                             
@@ -267,6 +267,58 @@
                                                                                     </div>
                                                                                 @endif
                                                                             @endif
+                                                                            
+                                                                            <!-- Sección de Productos -->
+                                                                            <div class="border-top pt-3 mt-3">
+                                                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                                    <h6 class="mb-0">
+                                                                                        <i class="bi bi-basket text-primary me-1"></i>
+                                                                                        Productos de la Ronda
+                                                                                    </h6>
+                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productosModal{{ $pedido->id }}_{{ $ronda->id }}">
+                                                                                        <i class="bi bi-plus-circle me-1"></i>
+                                                                                        Agregar Productos
+                                                                                    </button>
+                                                                                </div>
+                                                                                
+                                                                                @if($ronda->detalles->count() > 0)
+                                                                                    <div class="table-responsive">
+                                                                                        <table class="table table-sm">
+                                                                                            <tbody>
+                                                                                                @foreach($ronda->detalles as $detalle)
+                                                                                                    <tr>
+                                                                                                        <td class="ps-0">
+                                                                                                            <strong>{{ $detalle->nombre_producto }}</strong>
+                                                                                                            @if($detalle->es_producto_personalizado)
+                                                                                                                <span class="badge bg-secondary ms-1">Personalizado</span>
+                                                                                                            @endif
+                                                                                                            @if($detalle->notas)
+                                                                                                                <br><small class="text-muted">{{ $detalle->notas }}</small>
+                                                                                                            @endif
+                                                                                                        </td>
+                                                                                                        <td class="text-center">{{ $detalle->cantidad }}x</td>
+                                                                                                        <td class="text-center">${{ number_format($detalle->precio_unitario, 0, ',', '.') }}</td>
+                                                                                                        <td class="text-end pe-0">
+                                                                                                            <strong>${{ number_format($detalle->subtotal, 0, ',', '.') }}</strong>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                @endforeach
+                                                                                                <tr class="border-top">
+                                                                                                    <td colspan="3" class="text-end"><strong>Total Productos:</strong></td>
+                                                                                                    <td class="text-end pe-0">
+                                                                                                        <strong class="text-success">${{ number_format($ronda->detalles->sum('subtotal'), 0, ',', '.') }}</strong>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                @else
+                                                                                    <div class="text-center text-muted py-2">
+                                                                                        <i class="bi bi-basket2 me-1"></i>
+                                                                                        Sin productos agregados
+                                                                                    </div>
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
                                                                     @endforeach
                                                                 </div>
@@ -439,179 +491,179 @@
 </div>
 @endforeach
 
+<!-- Modales Agregar Productos (uno por cada ronda) -->
+@foreach($pedidos as $pedido)
+    @foreach($pedido->rondas as $ronda)
+    <div class="modal fade" id="productosModal{{ $pedido->id }}_{{ $ronda->id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('pedidos.rondas.agregar-productos', [$pedido, $ronda]) }}" id="formProductos{{ $pedido->id }}_{{ $ronda->id }}">
+                    @csrf
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-basket me-2"></i>
+                            Agregar Productos - Ronda {{ $ronda->numero_ronda }}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Pedido:</strong> {{ $pedido->nombre_cliente }}
+                            <br>
+                            <small>Agrega productos o servicios adicionales a esta ronda</small>
+                        </div>
+
+                        <!-- Campo de búsqueda de productos -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-search me-2"></i>
+                                Buscar Producto por Nombre
+                            </label>
+                            <div class="position-relative">
+                                <input type="text" 
+                                       class="form-control form-control-lg buscar-producto" 
+                                       placeholder="Escribe el nombre del producto..."
+                                       id="buscarProducto{{ $pedido->id }}_{{ $ronda->id }}"
+                                       autocomplete="off">
+                                <div class="position-absolute w-100 bg-white border rounded shadow-sm resultados-busqueda" 
+                                     style="top: 100%; z-index: 1050; display: none; max-height: 200px; overflow-y: auto;"></div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Escribe al menos 2 letras para buscar entre {{ $productos->count() }} productos disponibles
+                            </small>
+                            <div class="mt-2">
+                                @foreach($productos->take(5) as $producto)
+                                    <span class="badge bg-light text-dark me-1 mb-1" style="font-size: 0.75em;">
+                                        {{ $producto->nombre }} - ${{ number_format($producto->precio_venta) }}
+                                    </span>
+                                @endforeach
+                                @if($productos->count() > 5)
+                                    <span class="badge bg-secondary">+{{ $productos->count() - 5 }} más...</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Tabla de productos seleccionados -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">
+                                <i class="bi bi-cart3 me-2"></i>
+                                Productos Seleccionados
+                            </h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm tabla-productos" id="tablaProductos{{ $pedido->id }}_{{ $ronda->id }}">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 40%;">Producto</th>
+                                            <th style="width: 20%;" class="text-center">Precio Unit.</th>
+                                            <th style="width: 20%;" class="text-center">Cantidad</th>
+                                            <th style="width: 15%;" class="text-center">Subtotal</th>
+                                            <th style="width: 5%;" class="text-center">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="productos-tbody">
+                                        <tr class="text-muted sin-productos">
+                                            <td colspan="5" class="text-center py-3">
+                                                <i class="bi bi-cart-x me-1"></i>
+                                                No hay productos agregados
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Campos ocultos para envío del formulario -->
+                        <div id="camposOcultos{{ $pedido->id }}_{{ $ronda->id }}"></div>
+
+                        <div class="alert alert-success mb-0">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <i class="bi bi-calculator me-2"></i>
+                                    <strong>Total de Productos:</strong>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span class="h4 total-productos text-success" style="font-weight: bold;">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-info me-2 debug-form-btn">
+                            <i class="bi bi-bug me-1"></i>
+                            Debug Form
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Agregar Productos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
+@endforeach
+
 @endsection
 
 @section('scripts')
+<!-- Test JavaScript -->
+<script src="{{ asset('js/test-pedidos.js') }}"></script>
+<!-- Sistema de Pedidos JavaScript -->
+<script src="{{ asset('js/pedidos.js') }}"></script>
 <script>
-console.log('🚀 Iniciando sistema de timers...');
-
-// Función simple para probar si el JavaScript funciona
-function testTimers() {
-    console.log('🔍 Buscando timers...');
-    const timers = document.querySelectorAll('.timer');
-    console.log(`✅ Encontrados ${timers.length} timers`);
-    
-    timers.forEach((timer, index) => {
-        const pedidoId = timer.getAttribute('data-pedido-id');
-        const rondaId = timer.getAttribute('data-ronda-id');
-        console.log(`🎯 Timer ${index + 1}: Pedido=${pedidoId}, Ronda=${rondaId}`);
-        
-        // Probar si podemos encontrar el elemento de costo
-        const costoElement = document.querySelector(`.costo-tiempo[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
-        console.log(`💰 Elemento costo ${index + 1}:`, costoElement);
-        
-        // Hacer una prueba manual del API
-        if (pedidoId && rondaId) {
-            const url = `/pedidos/${pedidoId}/rondas/${rondaId}/tiempo-real`;
-            console.log(`🌐 Probando API: ${url}`);
-            
-            fetch(url)
-                .then(response => {
-                    console.log(`📡 Respuesta ${index + 1}: Status ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(`📊 Datos ${index + 1}:`, data);
-                    
-                    if (data.activo) {
-                        console.log(`⏰ Timer ${index + 1} ESTÁ ACTIVO!`);
-                        
-                        // Intentar actualizar manualmente
-                        timer.textContent = `PRUEBA: ${data.duracion_segundos}s`;
-                        
-                        if (costoElement) {
-                            costoElement.textContent = `PRUEBA: $${Math.round(data.costo)}`;
-                        }
-                    } else {
-                        console.log(`😴 Timer ${index + 1} no está activo`);
-                        timer.textContent = '00:00:00';
-                        if (costoElement) {
-                            costoElement.textContent = '$0';
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error(`❌ Error en timer ${index + 1}:`, error);
-                });
-        }
-    });
-}
-
-// Función para formatear tiempo
-function formatearTiempo(segundos) {
-    const horas = Math.floor(segundos / 3600);
-    const mins = Math.floor((segundos % 3600) / 60);
-    const segs = segundos % 60;
-    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
-}
-
-// Sistema de timers activos
-let timersActivos = {};
-
-// Función para actualizar timers
-function actualizarTimers() {
-    Object.keys(timersActivos).forEach(timerKey => {
-        const [pedidoId, rondaId] = timerKey.split('-');
-        const timerData = timersActivos[timerKey];
-        
-        // Calcular tiempo transcurrido
-        const ahora = Math.floor(Date.now() / 1000);
-        const transcurrido = ahora - timerData.inicio;
-        
-        // Actualizar display
-        const timerElement = document.querySelector(`.timer[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
-        if (timerElement) {
-            timerElement.textContent = formatearTiempo(transcurrido);
-        }
-        
-        // Actualizar costo
-        const costoElement = document.querySelector(`.costo-tiempo[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
-        if (costoElement) {
-            const minutos = transcurrido / 60;
-            const costo = Math.round(minutos * timerData.precioPorMinuto);
-            costoElement.textContent = `$${costo.toLocaleString('es-CO')}`;
-        }
-    });
-}
-
-// Sincronizar con servidor
-function sincronizar() {
-    console.log('🔄 Sincronizando con servidor...');
-    
-    document.querySelectorAll('.timer').forEach(timer => {
-        const pedidoId = timer.getAttribute('data-pedido-id');
-        const rondaId = timer.getAttribute('data-ronda-id');
-        
-        if (!pedidoId || !rondaId) return;
-        
-        fetch(`/pedidos/${pedidoId}/rondas/${rondaId}/tiempo-real`)
-            .then(response => response.json())
-            .then(data => {
-                const timerKey = `${pedidoId}-${rondaId}`;
-                
-                if (data.activo) {
-                    console.log(`✅ Timer activo: ${timerKey}`, data);
-                    timersActivos[timerKey] = {
-                        inicio: data.inicio_timestamp,
-                        precioPorMinuto: data.precio_por_minuto
-                    };
-                } else {
-                    console.log(`❌ Timer inactivo: ${timerKey}`);
-                    delete timersActivos[timerKey];
-                    timer.textContent = '00:00:00';
-                    
-                    const costoElement = document.querySelector(`.costo-tiempo[data-pedido-id="${pedidoId}"][data-ronda-id="${rondaId}"]`);
-                    if (costoElement) {
-                        costoElement.textContent = '$0';
-                    }
-                }
-            })
-            .catch(error => console.error(`❌ Error: ${timerKey}`, error));
-    });
-}
-
-// Manejar modales
-function configurarModales() {
-    document.querySelectorAll('[id^="mesaSelect"]').forEach(select => {
-        const pedidoId = select.id.replace('mesaSelect', '');
-        const checkDiv = document.getElementById(`iniciarTiempoCheck${pedidoId}`);
-        
-        if (checkDiv) {
-            select.addEventListener('change', function() {
-                checkDiv.style.display = this.value ? 'block' : 'none';
-            });
-        }
-    });
-}
-
-// Inicializar todo
+// Configuración específica de la vista
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM cargado, inicializando...');
+    // Inicializar productos desde el servidor
+    const productosData = {!! $productos->map(function($p) {
+        return [
+            'id' => $p->id,
+            'nombre' => $p->nombre,
+            'precio' => $p->precio_venta,
+            'categoria' => $p->categoria->nombre ?? 'Sin categoría'
+        ];
+    })->toJson() !!};
     
-    // Probar inmediatamente
-    setTimeout(testTimers, 500);
+    if (window.productManager) {
+        window.productManager.init(productosData);
+        window.productManager.configurarBusqueda();
+    }
     
-    // Configurar sistema real
-    setTimeout(() => {
-        sincronizar();
-        configurarModales();
-        
-        // Actualizar cada segundo
-        setInterval(actualizarTimers, 1000);
-        
-        // Sincronizar cada 30 segundos
-        setInterval(sincronizar, 30000);
-        
-        console.log('🎉 Sistema de timers inicializado correctamente');
-    }, 1000);
+    if (window.timerSystem) {
+        setTimeout(() => window.timerSystem.start(), 1000);
+    }
+    
+    // Sistema de modal nueva ronda automático
+    configurarModalNuevaRonda();
+    
+    console.log('✅ Sistema Terkkos completamente inicializado');
 });
 
-// Refrescar después de acciones
-document.addEventListener('submit', function(e) {
-    const form = e.target;
-    if (form.action && form.action.includes('tiempo')) {
-        setTimeout(sincronizar, 2000);
-    }
-});
+// Función para configurar el modal de nueva ronda automático
+function configurarModalNuevaRonda() {
+    // Verificar si se debe mostrar el modal de nueva ronda
+    @if(session('mostrar_modal_nueva_ronda'))
+        const pedidoId = {{ session('nuevo_pedido_id', 0) }};
+        
+        if (pedidoId) {
+            console.log('🎯 Mostrando modal nueva ronda para pedido:', pedidoId);
+            
+            // Mostrar el modal de nueva ronda automáticamente
+            setTimeout(() => {
+                const modal = new bootstrap.Modal(document.getElementById(`nuevaRondaModal${pedidoId}`));
+                modal.show();
+                
+                // También abrir el acordeón del pedido recién creado
+                const acordeon = document.getElementById(`pedido${pedidoId}`);
+                if (acordeon) {
+                    const collapse = new bootstrap.Collapse(acordeon, { show: true });
+                }
+            }, 1000);
+        }
+    @endif
+}
 </script>
 @endsection
