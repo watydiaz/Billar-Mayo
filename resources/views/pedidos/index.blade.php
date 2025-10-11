@@ -267,58 +267,7 @@
                                                                                     </div>
                                                                                 @endif
                                                                             @endif
-                                                                            
-                                                                            <!-- Sección de Productos -->
-                                                                            <div class="border-top pt-3 mt-3">
-                                                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                                                    <h6 class="mb-0">
-                                                                                        <i class="bi bi-basket text-primary me-1"></i>
-                                                                                        Productos de la Ronda
-                                                                                    </h6>
-                                                                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productosModal{{ $pedido->id }}_{{ $ronda->id }}">
-                                                                                        <i class="bi bi-plus-circle me-1"></i>
-                                                                                        Agregar Productos
-                                                                                    </button>
-                                                                                </div>
-                                                                                
-                                                                                @if($ronda->detalles->count() > 0)
-                                                                                    <div class="table-responsive">
-                                                                                        <table class="table table-sm">
-                                                                                            <tbody>
-                                                                                                @foreach($ronda->detalles as $detalle)
-                                                                                                    <tr>
-                                                                                                        <td class="ps-0">
-                                                                                                            <strong>{{ $detalle->nombre_producto }}</strong>
-                                                                                                            @if($detalle->es_producto_personalizado)
-                                                                                                                <span class="badge bg-secondary ms-1">Personalizado</span>
-                                                                                                            @endif
-                                                                                                            @if($detalle->notas)
-                                                                                                                <br><small class="text-muted">{{ $detalle->notas }}</small>
-                                                                                                            @endif
-                                                                                                        </td>
-                                                                                                        <td class="text-center">{{ $detalle->cantidad }}x</td>
-                                                                                                        <td class="text-center">${{ number_format($detalle->precio_unitario, 0, ',', '.') }}</td>
-                                                                                                        <td class="text-end pe-0">
-                                                                                                            <strong>${{ number_format($detalle->subtotal, 0, ',', '.') }}</strong>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                @endforeach
-                                                                                                <tr class="border-top">
-                                                                                                    <td colspan="3" class="text-end"><strong>Total Productos:</strong></td>
-                                                                                                    <td class="text-end pe-0">
-                                                                                                        <strong class="text-success">${{ number_format($ronda->detalles->sum('subtotal'), 0, ',', '.') }}</strong>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
-                                                                                @else
-                                                                                    <div class="text-center text-muted py-2">
-                                                                                        <i class="bi bi-basket2 me-1"></i>
-                                                                                        Sin productos agregados
-                                                                                    </div>
-                                                                                @endif
-                                                                            </div>
+
                                                                         </div>
                                                                     @endforeach
                                                                 </div>
@@ -491,121 +440,7 @@
 </div>
 @endforeach
 
-<!-- Modales Agregar Productos (uno por cada ronda) -->
-@foreach($pedidos as $pedido)
-    @foreach($pedido->rondas as $ronda)
-    <div class="modal fade" id="productosModal{{ $pedido->id }}_{{ $ronda->id }}" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form method="POST" action="{{ route('pedidos.rondas.agregar-productos', [$pedido, $ronda]) }}" id="formProductos{{ $pedido->id }}_{{ $ronda->id }}">
-                    @csrf
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">
-                            <i class="bi bi-basket me-2"></i>
-                            Agregar Productos - Ronda {{ $ronda->numero_ronda }}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Pedido:</strong> {{ $pedido->nombre_cliente }}
-                            <br>
-                            <small>Agrega productos o servicios adicionales a esta ronda</small>
-                        </div>
 
-                        <!-- Campo de búsqueda de productos -->
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <i class="bi bi-search me-2"></i>
-                                Buscar Producto por Nombre
-                            </label>
-                            <div class="position-relative">
-                                <input type="text" 
-                                       class="form-control form-control-lg buscar-producto" 
-                                       placeholder="Escribe el nombre del producto..."
-                                       id="buscarProducto{{ $pedido->id }}_{{ $ronda->id }}"
-                                       autocomplete="off">
-                                <div class="position-absolute w-100 bg-white border rounded shadow-sm resultados-busqueda" 
-                                     style="top: 100%; z-index: 1050; display: none; max-height: 200px; overflow-y: auto;"></div>
-                            </div>
-                            <small class="text-muted">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Escribe al menos 2 letras para buscar entre {{ $productos->count() }} productos disponibles
-                            </small>
-                            <div class="mt-2">
-                                @foreach($productos->take(5) as $producto)
-                                    <span class="badge bg-light text-dark me-1 mb-1" style="font-size: 0.75em;">
-                                        {{ $producto->nombre }} - ${{ number_format($producto->precio_venta) }}
-                                    </span>
-                                @endforeach
-                                @if($productos->count() > 5)
-                                    <span class="badge bg-secondary">+{{ $productos->count() - 5 }} más...</span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Tabla de productos seleccionados -->
-                        <div class="mb-4">
-                            <h6 class="mb-3">
-                                <i class="bi bi-cart3 me-2"></i>
-                                Productos Seleccionados
-                            </h6>
-                            <div class="table-responsive">
-                                <table class="table table-sm tabla-productos" id="tablaProductos{{ $pedido->id }}_{{ $ronda->id }}">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="width: 40%;">Producto</th>
-                                            <th style="width: 20%;" class="text-center">Precio Unit.</th>
-                                            <th style="width: 20%;" class="text-center">Cantidad</th>
-                                            <th style="width: 15%;" class="text-center">Subtotal</th>
-                                            <th style="width: 5%;" class="text-center">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="productos-tbody">
-                                        <tr class="text-muted sin-productos">
-                                            <td colspan="5" class="text-center py-3">
-                                                <i class="bi bi-cart-x me-1"></i>
-                                                No hay productos agregados
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Campos ocultos para envío del formulario -->
-                        <div id="camposOcultos{{ $pedido->id }}_{{ $ronda->id }}"></div>
-
-                        <div class="alert alert-success mb-0">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <i class="bi bi-calculator me-2"></i>
-                                    <strong>Total de Productos:</strong>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <span class="h4 total-productos text-success" style="font-weight: bold;">$0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-info me-2 debug-form-btn">
-                            <i class="bi bi-bug me-1"></i>
-                            Debug Form
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-lg me-1"></i>
-                            Agregar Productos
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    @endforeach
-@endforeach
 
 @endsection
 
@@ -617,20 +452,7 @@
 <script>
 // Configuración específica de la vista
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar productos desde el servidor
-    const productosData = {!! $productos->map(function($p) {
-        return [
-            'id' => $p->id,
-            'nombre' => $p->nombre,
-            'precio' => $p->precio_venta,
-            'categoria' => $p->categoria->nombre ?? 'Sin categoría'
-        ];
-    })->toJson() !!};
-    
-    if (window.productManager) {
-        window.productManager.init(productosData);
-        window.productManager.configurarBusqueda();
-    }
+
     
     if (window.timerSystem) {
         setTimeout(() => window.timerSystem.start(), 1000);

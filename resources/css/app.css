@@ -79,6 +79,143 @@ body {
     color: white;
 }
 
+/* Floating Quick Actions Button */
+.floating-quick-actions {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    z-index: 1050;
+}
+
+.btn-floating-main {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+}
+
+.btn-floating-main:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+}
+
+.btn-floating-main:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-floating-main:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+/* Pulse animation on hover */
+.btn-floating-main::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(13, 110, 253, 0.3);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.3s ease;
+    z-index: -1;
+}
+
+.btn-floating-main:hover::before {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+/* Badge notification */
+.badge-notification {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--terkkos-yellow) !important;
+    color: #000 !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.floating-menu {
+    position: absolute;
+    top: -120px;
+    right: 0;
+    min-width: 200px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 8px 0;
+}
+
+.floating-menu .dropdown-item {
+    padding: 12px 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 2px 8px;
+}
+
+.floating-menu .dropdown-item:hover {
+    background-color: rgba(var(--terkkos-yellow-rgb), 0.1);
+    transform: translateX(4px);
+}
+
+.floating-menu .dropdown-item i {
+    font-size: 1.1rem;
+    width: 20px;
+}
+
+/* Ajustes para menú superior */
+.dropdown-menu-top {
+    transform-origin: bottom right;
+}
+
+.dropdown-menu-top.show {
+    animation: slideUpFade 0.2s ease-out;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Animation for the plus icon */
+.btn-floating-main[aria-expanded="true"] i {
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
+.btn-floating-main[aria-expanded="false"] i {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+}
+
 /* Responsive improvements */
 @media (max-width: 768px) {
     .display-4 {
@@ -87,5 +224,21 @@ body {
     
     .lead {
         font-size: 1rem;
+    }
+    
+    .floating-quick-actions {
+        bottom: 90px;
+        right: 20px;
+    }
+    
+    .btn-floating-main {
+        width: 55px;
+        height: 55px;
+        font-size: 1.3rem;
+    }
+    
+    .floating-menu {
+        min-width: 180px;
+        top: -110px;
     }
 }

@@ -7,7 +7,7 @@ use App\Models\Pedido;
 use App\Models\Mesa;
 use App\Models\MesaAlquiler;
 use App\Models\Ronda;
-use App\Models\Producto;
+
 use App\Models\MesaRonda;
 
 class PedidoController extends Controller
@@ -21,9 +21,8 @@ class PedidoController extends Controller
             ->get();
             
         $mesas = Mesa::where('activa', true)->get();
-        $productos = Producto::with('categoria')->where('activo', true)->get();
         
-        return view('pedidos.index', compact('pedidos', 'mesas', 'productos'));
+        return view('pedidos.index', compact('pedidos', 'mesas'));
     }
 
     public function store(Request $request)
@@ -415,98 +414,7 @@ class PedidoController extends Controller
         }
     }
 
-    // Agregar productos a una ronda
-    public function agregarProductos(Request $request, Pedido $pedido, Ronda $ronda)
-    {
-        \Log::info('Intentando agregar productos', [
-            'pedido_id' => $pedido->id,
-            'ronda_id' => $ronda->id,
-            'request_data' => $request->all()
-        ]);
 
-        if ($ronda->pedido_id !== $pedido->id) {
-            \Log::error('Ronda no válida para pedido', [
-                'ronda_pedido_id' => $ronda->pedido_id,
-                'pedido_id' => $pedido->id
-            ]);
-            return redirect()->back()->with('error', 'Ronda no válida para este pedido');
-        }
-
-        // Debug de productos recibidos
-        if (!$request->has('productos') || empty($request->productos)) {
-            \Log::error('No se recibieron productos', ['request' => $request->all()]);
-            return redirect()->back()->with('error', 'No se recibieron productos para agregar');
-        }
-
-        // Filtrar productos válidos (que tengan producto_id seleccionado)
-        $productosValidos = [];
-        foreach ($request->productos as $index => $producto) {
-            if (!empty($producto['producto_id']) && !empty($producto['nombre_producto'])) {
-                $productosValidos[] = $producto;
-            }
-        }
-
-        if (empty($productosValidos)) {
-            return redirect()->back()->with('error', 'No hay productos válidos seleccionados');
-        }
-
-        \Log::info('Productos válidos encontrados', ['count' => count($productosValidos), 'productos' => $productosValidos]);
-
-        $request->validate([
-            'productos' => 'required|array',
-            'productos.*.producto_id' => 'nullable|exists:productos,id',
-            'productos.*.nombre_producto' => 'required|string|max:300',
-            'productos.*.cantidad' => 'required|integer|min:1',
-            'productos.*.precio_unitario' => 'required|numeric|min:0',
-            'productos.*.notas' => 'nullable|string'
-        ]);
-
-        $totalAgregado = 0;
-
-        foreach ($productosValidos as $productoData) {
-            $subtotal = $productoData['cantidad'] * $productoData['precio_unitario'];
-            
-            \Log::info('Creando producto', [
-                'ronda_id' => $ronda->id,
-                'producto_data' => $productoData,
-                'subtotal' => $subtotal
-            ]);
-            
-            $detalle = RondaDetalle::create([
-                'ronda_id' => $ronda->id,
-                'producto_id' => $productoData['producto_id'] ?: null,
-                'nombre_producto' => $productoData['nombre_producto'],
-                'cantidad' => $productoData['cantidad'],
-                'precio_unitario' => $productoData['precio_unitario'],
-                'subtotal' => $subtotal,
-                'es_descuento' => false,
-                'es_producto_personalizado' => empty($productoData['producto_id']),
-                'notas' => $productoData['notas'] ?? null
-            ]);
-
-            \Log::info('Producto creado', ['detalle_id' => $detalle->id]);
-            
-            $totalAgregado += $subtotal;
-        }
-
-        // Actualizar total de la ronda
-        $ronda->update([
-            'total_ronda' => $ronda->total_ronda + $totalAgregado
-        ]);
-
-        // Actualizar total del pedido
-        $pedido->update([
-            'total_pedido' => $pedido->rondas()->sum('total_ronda')
-        ]);
-
-        \Log::info('Productos agregados exitosamente', [
-            'total_agregado' => $totalAgregado,
-            'nuevo_total_ronda' => $ronda->total_ronda,
-            'productos_count' => count($productosValidos)
-        ]);
-
-        return redirect()->back()->with('success', 'Se agregaron ' . count($productosValidos) . ' productos correctamente a la ronda ' . $ronda->numero_ronda . ' por un total de $' . number_format($totalAgregado, 0, ',', '.'));
-    }
 
     public function eliminar(Pedido $pedido)
     {

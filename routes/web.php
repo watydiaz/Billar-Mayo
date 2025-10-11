@@ -57,24 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pedidos/{pedido}/rondas/{ronda}/finalizar-tiempo', [App\Http\Controllers\PedidoController::class, 'finalizarTiempoRonda'])->name('pedidos.rondas.finalizar-tiempo');
     Route::post('/pedidos/{pedido}/rondas/{ronda}/asignar-responsable', [App\Http\Controllers\PedidoController::class, 'asignarResponsable'])->name('pedidos.rondas.asignar-responsable');
     Route::get('/pedidos/{pedido}/rondas/{ronda}/tiempo-real', [App\Http\Controllers\PedidoController::class, 'tiempoRealRonda'])->name('pedidos.rondas.tiempo-real');
-    Route::post('/pedidos/{pedido}/rondas/{ronda}/agregar-productos', [App\Http\Controllers\PedidoController::class, 'agregarProductos'])->name('pedidos.rondas.agregar-productos');
-    
-    // API para obtener productos
-    Route::get('/productos', function() {
-        $productos = \App\Models\Producto::with('categoria')
-            ->where('activo', true)
-            ->get()
-            ->map(function($producto) {
-                return [
-                    'id' => $producto->id,
-                    'nombre' => $producto->nombre,
-                    'precio' => $producto->precio_venta,
-                    'categoria' => $producto->categoria->nombre ?? 'Sin categoría'
-                ];
-            });
-        
-        return response()->json($productos);
-    })->name('productos.api');
+
     
     // Endpoint optimizado para obtener todos los timers activos
     Route::get('/pedidos/timers-activos', [App\Http\Controllers\PedidoController::class, 'timersActivos'])->name('pedidos.timers-activos');
