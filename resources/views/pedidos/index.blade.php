@@ -385,14 +385,12 @@
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle me-2"></i>
                         <strong>¿Crear nueva ronda?</strong>
-                        <br>
-                        <small>El responsable se asignará al finalizar el tiempo (quien pierda)</small>
-                    </div>
-                    <p class="text-center mb-3">
-                        Se creará: <strong>Ronda {{ ($pedido->rondas()->max('numero_ronda') ?? 0) + 1 }}</strong>
-                    </p>
-                    
-                    <!-- Opción de Mesa -->
+                <br>
+                <small>El responsable se asignará al finalizar el tiempo (quien pierda)</small>
+            </div>
+            <p class="text-center mb-3">
+                Se creará: <strong>Ronda {{ (int)($pedido->rondas->max('numero_ronda') ?? 0) + 1 }}</strong>
+            </p>                    <!-- Opción de Mesa -->
                     <div class="mb-3">
                         <label class="form-label">Mesa (Opcional)</label>
                         <select name="mesa_id" class="form-select" id="mesaSelect{{ $pedido->id }}">

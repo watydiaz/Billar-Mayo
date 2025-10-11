@@ -45,22 +45,22 @@ class Mesa extends Model
         return $this->hasMany(Pedido::class);
     }
 
-    // Relación con MesaAlquileres
-    public function mesaAlquileres(): HasMany
-    {
-        return $this->hasMany(MesaAlquiler::class);
-    }
-
-    // Relación con MesaRondas (nueva estructura)
+    // Relación con MesaRondas (reemplaza MesaAlquileres)
     public function mesaRondas(): HasMany
     {
-        return $this->hasMany(MesaRonda::class);
+        return $this->hasMany(MesaRonda::class, 'mesa_id');
     }
 
-    // Alquiler activo en la mesa
+    // Alias para compatibilidad con código existente
+    public function mesaAlquileres(): HasMany
+    {
+        return $this->mesaRondas();
+    }
+
+    // Obtener la ronda activa actual de esta mesa
     public function alquilerActivo()
     {
-        return $this->mesaAlquileres()->where('estado', 'activo')->first();
+        return $this->mesaRondas()->where('estado', 'activo')->first();
     }
 
     // Ronda activa en la mesa (nueva estructura)

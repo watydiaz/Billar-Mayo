@@ -33,6 +33,16 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-dark fw-semibold {{ request()->routeIs('productos.*') ? 'active' : '' }}" href="{{ route('productos.index') }}">
+                        <i class="bi bi-boxes me-1"></i>Productos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-semibold {{ request()->routeIs('ventas.*') ? 'active' : '' }}" href="{{ route('ventas.index') }}">
+                        <i class="bi bi-graph-up me-1"></i>Ventas
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-dark fw-semibold" href="#">
                         <i class="bi bi-currency-dollar me-1"></i>Tarifas
                     </a>

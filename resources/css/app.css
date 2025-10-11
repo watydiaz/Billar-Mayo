@@ -156,6 +156,99 @@ body {
     50% { transform: scale(1.1); }
 }
 
+/* Estilos para Venta Rápida Modal */
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.producto-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.producto-card:hover {
+    border-color: var(--bs-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.producto-card.selected {
+    border-color: var(--bs-success);
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+.producto-precio {
+    font-weight: 600;
+    color: var(--bs-success);
+    font-size: 1.1rem;
+}
+
+.producto-categoria {
+    font-size: 0.8rem;
+    color: var(--bs-secondary);
+    text-transform: uppercase;
+}
+
+.carrito-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+}
+
+.carrito-item:last-child {
+    margin-bottom: 0;
+}
+
+.cantidad-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cantidad-controls button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.cantidad-display {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.producto-agotado {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+}
+
+.producto-agotado:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: #dee2e6 !important;
+}
+
+.producto-stock {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
 .floating-menu {
     position: absolute;
     top: -120px;
