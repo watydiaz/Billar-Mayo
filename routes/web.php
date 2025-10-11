@@ -77,6 +77,10 @@ Route::middleware(['auth'])->group(function () {
     // Endpoint optimizado para obtener todos los timers activos
     Route::get('/pedidos/timers-activos', [App\Http\Controllers\RondaController::class, 'timersActivos'])->name('pedidos.timers-activos');
     
+    // Rutas para agregar productos a rondas
+    Route::post('/pedidos/{pedido}/rondas/{ronda}/productos', [App\Http\Controllers\RondaController::class, 'agregarProducto'])->name('pedidos.rondas.agregar-producto');
+    Route::delete('/ronda-detalles/{detalle}', [App\Http\Controllers\RondaController::class, 'eliminarDetalle'])->name('ronda-detalles.eliminar');
+    
     // API para venta rápida
     Route::get('/venta-rapida/productos', [App\Http\Controllers\VentaRapidaController::class, 'obtenerProductos'])->name('venta-rapida.productos');
     Route::post('/venta-rapida/procesar', [App\Http\Controllers\VentaRapidaController::class, 'procesarVenta'])->name('venta-rapida.procesar');

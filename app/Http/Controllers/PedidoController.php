@@ -21,8 +21,11 @@ class PedidoController extends Controller
             ->get();
             
         $mesas = Mesa::where('activa', true)->get();
+        $productos = \App\Models\Producto::where('activo', true)
+            ->orderBy('nombre')
+            ->get();
         
-        return view('pedidos.index', compact('pedidos', 'mesas'));
+        return view('pedidos.index', compact('pedidos', 'mesas', 'productos'));
     }
 
     public function store(Request $request)

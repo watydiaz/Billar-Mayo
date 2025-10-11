@@ -13,21 +13,19 @@ class Producto extends Model
         'codigo',
         'nombre',
         'descripcion',
-        'categoria_id',
-        'precio_venta',
-        'precio_costo',
-        'stock_actual',
+        'precio',
+        'stock',
         'stock_minimo',
-        'unidad_medida',
-        'activo',
-        'imagen_url'
+        'categoria',
+        'es_servicio',
+        'activo'
     ];
 
     protected $casts = [
-        'precio_venta' => 'decimal:2',
-        'precio_costo' => 'decimal:2',
-        'stock_actual' => 'integer',
+        'precio' => 'decimal:2',
+        'stock' => 'integer',
         'stock_minimo' => 'integer',
+        'es_servicio' => 'boolean',
         'activo' => 'boolean'
     ];
 

@@ -1,0 +1,2000 @@
+{
+    "database": "barcode_terkkos",
+    "generated_at": "2025-10-11 16:34:17",
+    "tables": [
+        {
+            "name": "actividad_log",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "tabla",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "accion",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "registro_id",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                },
+                {
+                    "name": "ronda_id",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "tipo_actividad",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "descripcion",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "cache",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "key",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "value",
+                    "type": "mediumtext",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "expiration",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "key"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "cache_locks",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "key",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "owner",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "expiration",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "key"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "categorias",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 8,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "nombre",
+                    "type": "varchar(100)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "descripcion",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "activo",
+                    "type": "tinyint(1)",
+                    "null": true,
+                    "key": "",
+                    "default": "1",
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "configuracion",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 8,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "clave",
+                    "type": "varchar(100)",
+                    "null": false,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "valor",
+                    "type": "text",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "descripcion",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "tipo_dato",
+                    "type": "enum('string','number','boolean','json')",
+                    "null": true,
+                    "key": "",
+                    "default": "string",
+                    "extra": ""
+                },
+                {
+                    "name": "categoria",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "general",
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "clave",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "clave"
+                    ]
+                },
+                {
+                    "name": "idx_categoria",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "categoria"
+                    ]
+                },
+                {
+                    "name": "idx_clave",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "clave"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "failed_jobs",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "uuid",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "connection",
+                    "type": "text",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "queue",
+                    "type": "text",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "payload",
+                    "type": "longtext",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "exception",
+                    "type": "longtext",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "failed_at",
+                    "type": "timestamp",
+                    "null": false,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "failed_jobs_uuid_unique",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "uuid"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "job_batches",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "total_jobs",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "pending_jobs",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "failed_jobs",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "failed_job_ids",
+                    "type": "longtext",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "options",
+                    "type": "mediumtext",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "cancelled_at",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "finished_at",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "jobs",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "queue",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "payload",
+                    "type": "longtext",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "attempts",
+                    "type": "tinyint unsigned",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "reserved_at",
+                    "type": "int unsigned",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "available_at",
+                    "type": "int unsigned",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "int unsigned",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "jobs_queue_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "queue"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "mesa_rondas",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 1,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "ronda_id",
+                    "type": "int",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "mesa_id",
+                    "type": "int",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "inicio_tiempo",
+                    "type": "datetime",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "fin_tiempo",
+                    "type": "datetime",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "duracion_minutos",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "costo_tiempo",
+                    "type": "decimal(8,2)",
+                    "null": false,
+                    "key": "",
+                    "default": "0.00",
+                    "extra": ""
+                },
+                {
+                    "name": "estado",
+                    "type": "enum('pendiente','activo','finalizado')",
+                    "null": false,
+                    "key": "MUL",
+                    "default": "pendiente",
+                    "extra": ""
+                },
+                {
+                    "name": "observaciones",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "mesa_rondas_mesa_id_foreign",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "mesa_id"
+                    ]
+                },
+                {
+                    "name": "mesa_rondas_ronda_id_mesa_id_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "ronda_id",
+                        "mesa_id"
+                    ]
+                },
+                {
+                    "name": "mesa_rondas_estado_mesa_id_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "estado",
+                        "mesa_id"
+                    ]
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "column": "mesa_id",
+                    "constraint_name": "mesa_rondas_mesa_id_foreign",
+                    "referenced_table": "mesas",
+                    "referenced_column": "id"
+                },
+                {
+                    "column": "ronda_id",
+                    "constraint_name": "mesa_rondas_ronda_id_foreign",
+                    "referenced_table": "rondas",
+                    "referenced_column": "id"
+                }
+            ]
+        },
+        {
+            "name": "mesas",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 4,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "numero_mesa",
+                    "type": "int",
+                    "null": false,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "capacidad",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": "4",
+                    "extra": ""
+                },
+                {
+                    "name": "precio_hora",
+                    "type": "decimal(10,2)",
+                    "null": true,
+                    "key": "",
+                    "default": "7000.00",
+                    "extra": ""
+                },
+                {
+                    "name": "activa",
+                    "type": "tinyint(1)",
+                    "null": true,
+                    "key": "",
+                    "default": "1",
+                    "extra": ""
+                },
+                {
+                    "name": "descripcion",
+                    "type": "varchar(200)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "numero_mesa",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "numero_mesa"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "migrations",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 3,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "migration",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "batch",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "password_reset_tokens",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "email",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "token",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "email"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "productos",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 67,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "codigo",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "nombre",
+                    "type": "varchar(200)",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "descripcion",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "categoria_id",
+                    "type": "int",
+                    "null": true,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "precio_venta",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "precio_costo",
+                    "type": "decimal(10,2)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "stock_actual",
+                    "type": "int",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "stock_minimo",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": "5",
+                    "extra": ""
+                },
+                {
+                    "name": "unidad_medida",
+                    "type": "varchar(20)",
+                    "null": true,
+                    "key": "",
+                    "default": "unidad",
+                    "extra": ""
+                },
+                {
+                    "name": "activo",
+                    "type": "tinyint(1)",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "1",
+                    "extra": ""
+                },
+                {
+                    "name": "imagen_url",
+                    "type": "varchar(500)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "codigo",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "codigo"
+                    ]
+                },
+                {
+                    "name": "idx_codigo",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "codigo"
+                    ]
+                },
+                {
+                    "name": "idx_nombre",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "nombre"
+                    ]
+                },
+                {
+                    "name": "idx_categoria",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "categoria_id"
+                    ]
+                },
+                {
+                    "name": "idx_activo",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "activo"
+                    ]
+                },
+                {
+                    "name": "idx_productos_categoria_activo",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "categoria_id",
+                        "activo"
+                    ]
+                },
+                {
+                    "name": "idx_stock_bajo",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "stock_actual",
+                        "stock_minimo"
+                    ]
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "column": "categoria_id",
+                    "constraint_name": "productos_ibfk_1",
+                    "referenced_table": "categorias",
+                    "referenced_column": "id"
+                }
+            ]
+        },
+        {
+            "name": "productos_mas_vendidos",
+            "engine": null,
+            "collation": null,
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "codigo",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "nombre_producto",
+                    "type": "varchar(200)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "categoria",
+                    "type": "varchar(100)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "veces_pedido",
+                    "type": "bigint",
+                    "null": false,
+                    "key": "",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "cantidad_total_vendida",
+                    "type": "decimal(32,0)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "ingresos_totales",
+                    "type": "decimal(32,2)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "precio_promedio",
+                    "type": "decimal(14,6)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "stock_actual",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "precio_actual",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [],
+            "foreign_keys": []
+        },
+        {
+            "name": "productos_stock_bajo",
+            "engine": null,
+            "collation": null,
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "codigo",
+                    "type": "varchar(50)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "nombre",
+                    "type": "varchar(200)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "categoria",
+                    "type": "varchar(100)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "stock_actual",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "stock_minimo",
+                    "type": "int",
+                    "null": true,
+                    "key": "",
+                    "default": "5",
+                    "extra": ""
+                },
+                {
+                    "name": "precio_venta",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [],
+            "foreign_keys": []
+        },
+        {
+            "name": "ronda_detalles",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 1,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "ronda_id",
+                    "type": "int",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "producto_id",
+                    "type": "int",
+                    "null": true,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "nombre_producto",
+                    "type": "varchar(300)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "cantidad",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "precio_unitario",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "subtotal",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "es_descuento",
+                    "type": "tinyint(1)",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "es_producto_personalizado",
+                    "type": "tinyint(1)",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "notas",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "idx_ronda",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "ronda_id"
+                    ]
+                },
+                {
+                    "name": "idx_producto",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "producto_id"
+                    ]
+                },
+                {
+                    "name": "idx_descuento",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "es_descuento"
+                    ]
+                },
+                {
+                    "name": "idx_personalizado",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "es_producto_personalizado"
+                    ]
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "column": "ronda_id",
+                    "constraint_name": "ronda_detalles_ibfk_1",
+                    "referenced_table": "rondas",
+                    "referenced_column": "id"
+                },
+                {
+                    "column": "producto_id",
+                    "constraint_name": "ronda_detalles_ibfk_2",
+                    "referenced_table": "productos",
+                    "referenced_column": "id"
+                }
+            ]
+        },
+        {
+            "name": "rondas",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "numero_ronda",
+                    "type": "varchar(50)",
+                    "null": false,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "cliente",
+                    "type": "varchar(255)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "total_ronda",
+                    "type": "decimal(10,2)",
+                    "null": true,
+                    "key": "",
+                    "default": "0.00",
+                    "extra": ""
+                },
+                {
+                    "name": "responsable",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "estado",
+                    "type": "enum('activa','pagada')",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "activa",
+                    "extra": ""
+                },
+                {
+                    "name": "es_duplicada",
+                    "type": "tinyint(1)",
+                    "null": true,
+                    "key": "MUL",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "ronda_origen_id",
+                    "type": "int",
+                    "null": true,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": "CURRENT_TIMESTAMP",
+                    "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "unique_pedido_ronda",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "numero_ronda"
+                    ]
+                },
+                {
+                    "name": "ronda_origen_id",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "ronda_origen_id"
+                    ]
+                },
+                {
+                    "name": "idx_numero_ronda",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "numero_ronda"
+                    ]
+                },
+                {
+                    "name": "idx_estado",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "estado"
+                    ]
+                },
+                {
+                    "name": "idx_duplicada",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "es_duplicada"
+                    ]
+                },
+                {
+                    "name": "idx_rondas_pedido_estado",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "estado"
+                    ]
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "column": "ronda_origen_id",
+                    "constraint_name": "rondas_ibfk_2",
+                    "referenced_table": "rondas",
+                    "referenced_column": "id"
+                }
+            ]
+        },
+        {
+            "name": "sessions",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 26,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "user_id",
+                    "type": "bigint unsigned",
+                    "null": true,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "ip_address",
+                    "type": "varchar(45)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "user_agent",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "payload",
+                    "type": "longtext",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "last_activity",
+                    "type": "int",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "sessions_user_id_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "user_id"
+                    ]
+                },
+                {
+                    "name": "sessions_last_activity_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "last_activity"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "users",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 0,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "email",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "email_verified_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "password",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "remember_token",
+                    "type": "varchar(100)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "users_email_unique",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "email"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "venta_detalles",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 1,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "venta_id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "MUL",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "producto_id",
+                    "type": "int unsigned",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "cantidad",
+                    "type": "int",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "precio_unitario",
+                    "type": "decimal(8,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "subtotal",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "descripcion",
+                    "type": "varchar(255)",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "venta_detalles_venta_id_producto_id_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "venta_id",
+                        "producto_id"
+                    ]
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "column": "venta_id",
+                    "constraint_name": "venta_detalles_venta_id_foreign",
+                    "referenced_table": "ventas",
+                    "referenced_column": "id"
+                }
+            ]
+        },
+        {
+            "name": "ventas",
+            "engine": "InnoDB",
+            "collation": "utf8mb4_unicode_ci",
+            "rows": 1,
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "null": false,
+                    "key": "PRI",
+                    "default": null,
+                    "extra": "auto_increment"
+                },
+                {
+                    "name": "numero_venta",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "UNI",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "subtotal",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": "0.00",
+                    "extra": ""
+                },
+                {
+                    "name": "descuento",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": "0.00",
+                    "extra": ""
+                },
+                {
+                    "name": "total",
+                    "type": "decimal(10,2)",
+                    "null": false,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "estado",
+                    "type": "enum('0','1')",
+                    "null": false,
+                    "key": "MUL",
+                    "default": "0",
+                    "extra": ""
+                },
+                {
+                    "name": "tipo_pago",
+                    "type": "varchar(255)",
+                    "null": false,
+                    "key": "",
+                    "default": "efectivo",
+                    "extra": ""
+                },
+                {
+                    "name": "observaciones",
+                    "type": "text",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "null": true,
+                    "key": "",
+                    "default": null,
+                    "extra": ""
+                }
+            ],
+            "indexes": [
+                {
+                    "name": "PRIMARY",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "id"
+                    ]
+                },
+                {
+                    "name": "ventas_numero_venta_unique",
+                    "type": "BTREE",
+                    "unique": true,
+                    "columns": [
+                        "numero_venta"
+                    ]
+                },
+                {
+                    "name": "ventas_estado_created_at_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "estado",
+                        "created_at"
+                    ]
+                },
+                {
+                    "name": "ventas_numero_venta_index",
+                    "type": "BTREE",
+                    "unique": false,
+                    "columns": [
+                        "numero_venta"
+                    ]
+                }
+            ],
+            "foreign_keys": []
+        }
+    ]
+}

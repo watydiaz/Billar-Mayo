@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('mesa_rondas', function (Blueprint $table) {
             $table->id();
-            $table->integer('ronda_id');
-            $table->integer('mesa_id');
+            $table->foreignId('ronda_id');
+            $table->foreignId('mesa_id');
             $table->datetime('inicio_tiempo')->nullable();
             $table->datetime('fin_tiempo')->nullable();
             $table->integer('duracion_minutos')->nullable();

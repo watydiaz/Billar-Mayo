@@ -335,3 +335,69 @@ body {
         top: -110px;
     }
 }
+
+/* Estilos para Sistema de Pagos en Pedidos */
+.accordion-header .btn {
+    transition: all 0.3s ease;
+}
+
+.accordion-header .btn:hover {
+    background-color: rgba(var(--bs-warning-rgb), 0.1) !important;
+}
+
+.btn-pago-completo {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(25, 135, 84, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-pago-completo:hover {
+    background: linear-gradient(135deg, #146c43 0%, #0f5132 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.4);
+}
+
+.btn-pago-ronda {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+    border: none !important;
+    color: #212529 !important;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-pago-ronda:hover {
+    background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.4);
+}
+
+/* Animación para resaltar el área de pago */
+.pago-section {
+    border: 2px dashed transparent;
+    transition: all 0.3s ease;
+}
+
+.pago-section:hover {
+    border-color: #ffc107;
+    background-color: rgba(255, 193, 7, 0.05);
+    border-radius: 0.5rem;
+}
+
+/* Estilos para los modales de pago */
+.modal-pago .modal-header {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+    color: #212529;
+    border-bottom: 2px solid #ffb300;
+}
+
+.modal-cuenta-completa .modal-header {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+    color: white;
+    border-bottom: 2px solid #146c43;
+}

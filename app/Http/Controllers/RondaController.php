@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Ronda;
 use App\Models\Mesa;
 use App\Models\MesaRonda;
+use App\Models\Producto;
+use App\Models\RondaDetalle;
 
 class RondaController extends Controller
 {
@@ -13,7 +15,7 @@ class RondaController extends Controller
     public function index()
     {
         // Cargar rondas activas con sus relaciones
-        $rondasActivas = Ronda::with(['mesaRonda.mesa'])
+        $rondasActivas = Ronda::with(['mesaRonda.mesa', 'detalles.producto'])
             ->where('estado', 'activa')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -32,15 +34,25 @@ class RondaController extends Controller
         // Para compatibilidad con la vista de pedidos, adaptamos las rondas
         $pedidos = $rondasActivas->map(function($ronda) {
             // Crear un objeto que simule un pedido para compatibilidad con la vista
-            $ronda->rondas = collect([$ronda]); // La ronda se contiene a sí misma
+            // Crear una copia de la ronda para la estructura interna, manteniendo las relaciones
+            $rondaInterna = clone $ronda;
+            $rondaInterna->setRelations($ronda->getRelations()); // Mantener todas las relaciones
+            
+            $ronda->rondas = collect([$rondaInterna]); // La ronda interna mantiene los detalles
             $ronda->total_pedido = $ronda->total_ronda; // Alias para total
             $ronda->nombre_cliente = $ronda->cliente; // Alias para cliente
+            $ronda->numero_pedido = $ronda->numero_ronda; // Alias para número
             return $ronda;
         });
+
+        $productos = Producto::where('activo', true)
+            ->orderBy('nombre')
+            ->get();
 
         return view('pedidos.index', compact(
             'pedidos',
             'mesas',
+            'productos',
             'mesasOcupadas',
             'tiempoTotalHoy',
             'ingresosTiempoHoy'
@@ -633,5 +645,155 @@ class RondaController extends Controller
             'total_clientes' => count($clientesResumen),
             'total_rondas_activas' => $rondas->count()
         ]);
+    }
+
+    // Agregar producto a una ronda
+    public function agregarProducto(Request $request, $pedidoId, $rondaId)
+    {
+        \Log::info('🚀 MÉTODO agregarProducto EJECUTADO - INICIO', [
+            'pedido_id' => $pedidoId,
+            'ronda_id' => $rondaId,
+            'method' => $request->method(),
+            'url' => $request->url(),
+            'all_data' => $request->all()
+        ]);
+        
+        try {
+            \Log::info('Iniciando agregarProducto', [
+                'pedido_id' => $pedidoId,
+                'ronda_id' => $rondaId,
+                'request_data' => $request->all()
+            ]);
+            
+            $pedido = Pedido::findOrFail($pedidoId);
+            $ronda = Ronda::findOrFail($rondaId);
+            $producto = Producto::findOrFail($request->producto_id);
+            
+            \Log::info('Entidades encontradas', [
+                'pedido_id' => $pedido->id,
+                'ronda_id' => $ronda->id,
+                'producto_id' => $producto->id
+            ]);
+            
+            // Verificar stock si el producto no es servicio
+            if (!$producto->es_servicio && $producto->stock < $request->cantidad) {
+                \Log::warning('Stock insuficiente', [
+                    'producto_id' => $producto->id,
+                    'stock_actual' => $producto->stock,
+                    'cantidad_solicitada' => $request->cantidad
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stock insuficiente'
+                ], 400);
+            }
+            
+            // Validar request
+            $validated = $request->validate([
+                'producto_id' => 'required|exists:productos,id',
+                'cantidad' => 'required|numeric|min:0.01',
+                'costo_unitario' => 'required|numeric|min:0'
+            ]);
+            
+            \Log::info('Validación exitosa', ['validated' => $validated]);
+            
+            // Preparar datos para crear detalle
+            $detalleData = [
+                'ronda_id' => $ronda->id,
+                'producto_id' => $request->producto_id,
+                'nombre_producto' => $producto->nombre,
+                'cantidad' => $request->cantidad,
+                'precio_unitario' => $request->costo_unitario,
+                'subtotal' => $request->cantidad * $request->costo_unitario
+            ];
+            
+            \Log::info('Datos para crear detalle', ['detalle_data' => $detalleData]);
+            
+            // Crear detalle de ronda
+            $detalle = RondaDetalle::create($detalleData);
+            
+            \Log::info('Detalle creado', [
+                'detalle_id' => $detalle->id ?? 'NO_ID',
+                'detalle_data' => $detalle->toArray() ?? 'NO_DATA'
+            ]);
+            
+            // Actualizar stock si no es servicio
+            if (!$producto->es_servicio) {
+                $producto->decrement('stock', $request->cantidad);
+                \Log::info('Stock actualizado', [
+                    'producto_id' => $producto->id,
+                    'nuevo_stock' => $producto->fresh()->stock
+                ]);
+            }
+            
+            // Recalcular total de la ronda
+            $totalAnterior = $ronda->total;
+            $ronda->total = $ronda->detalles()->sum('subtotal');
+            $ronda->save();
+            
+            \Log::info('Total de ronda actualizado', [
+                'ronda_id' => $ronda->id,
+                'total_anterior' => $totalAnterior,
+                'total_nuevo' => $ronda->total
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Producto agregado correctamente',
+                'detalle' => $detalle
+            ]);
+            
+        } catch (Exception $e) {
+            \Log::error('Error en agregarProducto', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al agregar producto: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Eliminar detalle de producto de una ronda
+    public function eliminarDetalle($detalleId)
+    {
+        try {
+            $detalle = \App\Models\RondaDetalle::findOrFail($detalleId);
+            $ronda = $detalle->ronda;
+            $producto = $detalle->producto;
+
+            // Si no era un descuento, restaurar el stock
+            if (!$detalle->es_descuento && $producto) {
+                $producto->increment('stock_actual', $detalle->cantidad);
+            }
+
+            // Eliminar el detalle
+            $detalle->delete();
+
+            // Recalcular total de la ronda
+            $nuevoTotal = \App\Models\RondaDetalle::where('ronda_id', $ronda->id)->sum('subtotal');
+            
+            // Agregar costo de tiempo de mesa si existe
+            if ($ronda->mesaRonda && $ronda->mesaRonda->costo_tiempo > 0) {
+                $nuevoTotal += $ronda->mesaRonda->costo_tiempo;
+            }
+
+            $ronda->update(['total_ronda' => $nuevoTotal]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Producto eliminado exitosamente',
+                'nuevo_total' => $nuevoTotal
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar producto: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
