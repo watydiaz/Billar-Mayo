@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Productos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .producto { border: 1px solid #ccc; margin: 10px 0; padding: 10px; }
+        button { padding: 10px 20px; margin: 5px; }
+        #resultado { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Test API Productos</h1>
+    
+    <button onclick="testProductos()">Cargar Productos</button>
+    <button onclick="testCategorias()">Cargar Categorías</button>
+    
+    <div id="resultado"></div>
+
+    <script>
+        async function testProductos() {
+            const resultado = document.getElementById('resultado');
+            
+            try {
+                resultado.innerHTML = '<p>Cargando productos...</p>';
+                
+                const response = await fetch('/api/productos');
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Data recibida:', data);
+                    
+                    let productos;
+                    if (data.value && Array.isArray(data.value)) {
+                        productos = data.value;
+                    } else if (Array.isArray(data)) {
+                        productos = data;
+                    } else {
+                        productos = [];
+                    }
+                    
+                    let html = `<h2>Productos (${productos.length}):</h2>`;
+                    
+                    productos.forEach(producto => {
+                        html += `
+                            <div class="producto">
+                                <h3>${producto.nombre}</h3>
+                                <p><strong>ID:</strong> ${producto.id}</p>
+                                <p><strong>Código:</strong> ${producto.codigo}</p>
+                                <p><strong>Categoría ID:</strong> ${producto.categoria_id}</p>
+                                <p><strong>Precio Compra:</strong> ${producto.precio_compra || 'N/A'}</p>
+                                <p><strong>Precio Venta:</strong> ${producto.precio_venta}</p>
+                                <p><strong>Stock:</strong> ${producto.stock}</p>
+                                <p><strong>Activo:</strong> ${producto.activo ? 'Sí' : 'No'}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    resultado.innerHTML = html;
+                } else {
+                    resultado.innerHTML = `<p style="color: red;">Error: ${response.status} ${response.statusText}</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultado.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testCategorias() {
+            const resultado = document.getElementById('resultado');
+            
+            try {
+                resultado.innerHTML = '<p>Cargando categorías...</p>';
+                
+                const response = await fetch('/api/categorias');
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Data recibida:', data);
+                    
+                    let categorias;
+                    if (data.value && Array.isArray(data.value)) {
+                        categorias = data.value;
+                    } else if (Array.isArray(data)) {
+                        categorias = data;
+                    } else {
+                        categorias = [];
+                    }
+                    
+                    let html = `<h2>Categorías (${categorias.length}):</h2>`;
+                    
+                    categorias.forEach(categoria => {
+                        html += `
+                            <div class="producto">
+                                <h3>${categoria.nombre}</h3>
+                                <p><strong>ID:</strong> ${categoria.id}</p>
+                                <p><strong>Descripción:</strong> ${categoria.descripcion || 'N/A'}</p>
+                                <p><strong>Activa:</strong> ${categoria.activa ? 'Sí' : 'No'}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    resultado.innerHTML = html;
+                } else {
+                    resultado.innerHTML = `<p style="color: red;">Error: ${response.status} ${response.statusText}</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultado.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

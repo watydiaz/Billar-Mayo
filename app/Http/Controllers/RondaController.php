@@ -14,40 +14,44 @@ class RondaController extends Controller
     // Vista principal de rondas - Reemplaza la vista de pedidos
     public function index()
     {
-        // Cargar rondas activas con sus relaciones
-        $rondasActivas = Ronda::with(['mesaRonda.mesa', 'detalles.producto'])
-            ->where('estado', 'activa')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $mesas = Mesa::where('activa', true)->get();
-
-        // Estadísticas
-        $mesasOcupadas = MesaRonda::where('estado', 'activo')->count();
-        $tiempoTotalHoy = MesaRonda::whereDate('created_at', today())
-            ->where('estado', 'finalizado')
-            ->sum('duracion_minutos');
-        $ingresosTiempoHoy = MesaRonda::whereDate('created_at', today())
-            ->where('estado', 'finalizado')
-            ->sum('costo_tiempo');
-
-        // Para compatibilidad con la vista de pedidos, adaptamos las rondas
-        $pedidos = $rondasActivas->map(function($ronda) {
-            // Crear un objeto que simule un pedido para compatibilidad con la vista
-            // Crear una copia de la ronda para la estructura interna, manteniendo las relaciones
-            $rondaInterna = clone $ronda;
-            $rondaInterna->setRelations($ronda->getRelations()); // Mantener todas las relaciones
-            
-            $ronda->rondas = collect([$rondaInterna]); // La ronda interna mantiene los detalles
-            $ronda->total_pedido = $ronda->total_ronda; // Alias para total
-            $ronda->nombre_cliente = $ronda->cliente; // Alias para cliente
-            $ronda->numero_pedido = $ronda->numero_ronda; // Alias para número
-            return $ronda;
+        // Cache de 30 segundos para mesas (cambian poco)
+        $mesas = \Cache::remember('mesas_disponibles', 30, function() {
+            return Mesa::select(['id', 'numero', 'tipo', 'estado'])
+                ->where('activa', true)
+                ->where('estado', 'disponible')
+                ->orderBy('numero')
+                ->get();
         });
 
-        $productos = Producto::where('activo', true)
-            ->orderBy('nombre')
+        // Cache de 10 segundos para productos (cambian poco)
+        $productos = \Cache::remember('productos_activos', 10, function() {
+            return Producto::with('categoria')->select(['id', 'codigo', 'nombre', 'precio', 'stock', 'es_servicio', 'categoria_id'])
+                ->where('activo', true)
+                ->orderBy('nombre')
+                ->limit(100)
+                ->get();
+        });
+
+        // Consulta optimizada sin cache para rondas (cambian frecuentemente)
+        $rondasActivas = Ronda::select(['id', 'numero_ronda', 'cliente', 'total', 'estado', 'created_at'])
+            ->where('estado', 'activa')
+            ->orderBy('created_at', 'desc')
+            ->limit(20) // Reducir aún más
             ->get();
+
+        // Estadísticas simplificadas
+        $mesasOcupadas = 0;
+        $tiempoTotalHoy = 0;
+        $ingresosTiempoHoy = 0;
+
+        // Estructura ultra-simplificada
+        $pedidos = $rondasActivas->map(function($ronda) {
+            $ronda->rondas = collect([$ronda]);
+            $ronda->total_pedido = $ronda->total;
+            $ronda->nombre_cliente = $ronda->cliente;
+            $ronda->numero_pedido = $ronda->numero_ronda;
+            return $ronda;
+        });
 
         return view('pedidos.index', compact(
             'pedidos',
@@ -64,7 +68,6 @@ class RondaController extends Controller
     {
         $request->validate([
             'nombre_cliente' => 'required|string|max:255',
-            'responsable' => 'nullable|string|max:255',
             'mesa_id' => 'nullable|exists:mesas,id'
         ]);
 
@@ -74,8 +77,7 @@ class RondaController extends Controller
         $ronda = Ronda::create([
             'numero_ronda' => $numeroRonda,
             'cliente' => $request->nombre_cliente,
-            'responsable' => $request->responsable ?? 'No asignado',
-            'total_ronda' => 0,
+            'total' => 0,
             'estado' => 'activa'
         ]);
 
@@ -225,15 +227,9 @@ class RondaController extends Controller
 
     public function asignarResponsable(Request $request, Ronda $ronda)
     {
-        $request->validate([
-            'responsable' => 'required|string|max:255'
-        ]);
-
-        $ronda->update(['responsable' => $request->responsable]);
-        return redirect()->back()->with('success', 'Responsable asignado correctamente');
-    }
-
-    public function tiempoRealRonda(Ronda $ronda)
+        // Funcionalidad temporalmente deshabilitada - campo responsable no existe en la nueva estructura
+        return redirect()->back()->with('info', 'Funcionalidad de responsable temporalmente deshabilitada');
+    }    public function tiempoRealRonda(Ronda $ronda)
     {
         return $this->tiempoRealTime($ronda);
     }
@@ -667,7 +663,7 @@ class RondaController extends Controller
             
             $pedido = Pedido::findOrFail($pedidoId);
             $ronda = Ronda::findOrFail($rondaId);
-            $producto = Producto::findOrFail($request->producto_id);
+            $producto = Producto::with('categoria')->findOrFail($request->producto_id);
             
             \Log::info('Entidades encontradas', [
                 'pedido_id' => $pedido->id,
@@ -740,7 +736,19 @@ class RondaController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Producto agregado correctamente',
-                'detalle' => $detalle
+                'detalle' => [
+                    'id' => $detalle->id,
+                    'ronda_id' => $detalle->ronda_id,
+                    'producto_id' => $detalle->producto_id,
+                    'nombre_producto' => $detalle->nombre_producto,
+                    'cantidad' => $detalle->cantidad,
+                    'precio_unitario' => $detalle->precio_unitario,
+                    'subtotal' => $detalle->subtotal
+                ],
+                'ronda' => [
+                    'id' => $ronda->id,
+                    'total_nuevo' => $ronda->total
+                ]
             ]);
             
         } catch (Exception $e) {
@@ -757,6 +765,51 @@ class RondaController extends Controller
         }
     }
 
+    // Obtener total actualizado de una ronda (para actualización dinámica)
+    public function obtenerTotal($rondaId)
+    {
+        try {
+            $ronda = Ronda::findOrFail($rondaId);
+            
+            return response()->json([
+                'success' => true,
+                'total' => $ronda->total,
+                'numero_ronda' => $ronda->numero_ronda
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener total'
+            ], 500);
+        }
+    }
+
+    // Cargar detalles de ronda bajo demanda (lazy loading)
+    public function obtenerDetalles($rondaId)
+    {
+        try {
+            $ronda = Ronda::with(['detalles' => function($query) {
+                $query->select(['id', 'ronda_id', 'nombre_producto', 'cantidad', 'precio_unitario', 'subtotal']);
+            }])->findOrFail($rondaId);
+            
+            return response()->json([
+                'success' => true,
+                'ronda' => [
+                    'id' => $ronda->id,
+                    'numero_ronda' => $ronda->numero_ronda,
+                    'cliente' => $ronda->cliente,
+                    'total' => $ronda->total,
+                    'detalles' => $ronda->detalles
+                ]
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar detalles'
+            ], 500);
+        }
+    }
+
     // Eliminar detalle de producto de una ronda
     public function eliminarDetalle($detalleId)
     {
@@ -767,7 +820,7 @@ class RondaController extends Controller
 
             // Si no era un descuento, restaurar el stock
             if (!$detalle->es_descuento && $producto) {
-                $producto->increment('stock_actual', $detalle->cantidad);
+                $producto->increment('stock', $detalle->cantidad);
             }
 
             // Eliminar el detalle
@@ -775,18 +828,14 @@ class RondaController extends Controller
 
             // Recalcular total de la ronda
             $nuevoTotal = \App\Models\RondaDetalle::where('ronda_id', $ronda->id)->sum('subtotal');
-            
-            // Agregar costo de tiempo de mesa si existe
-            if ($ronda->mesaRonda && $ronda->mesaRonda->costo_tiempo > 0) {
-                $nuevoTotal += $ronda->mesaRonda->costo_tiempo;
-            }
 
-            $ronda->update(['total_ronda' => $nuevoTotal]);
+            $ronda->update(['total' => $nuevoTotal]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Producto eliminado exitosamente',
-                'nuevo_total' => $nuevoTotal
+                'nuevo_total' => $nuevoTotal,
+                'ronda_id' => $ronda->id
             ]);
 
         } catch (\Exception $e) {

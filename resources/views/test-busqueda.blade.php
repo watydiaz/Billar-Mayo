@@ -40,8 +40,8 @@
             {
                 id: {{ $producto->id }},
                 nombre: '{{ addslashes($producto->nombre) }}',
-                precio: {{ $producto->precio_venta }},
-                categoria: '{{ addslashes($producto->categoria->nombre ?? 'Sin categoría') }}'
+                precio: {{ $producto->precio }},
+                categoria: '@if($producto->categoria){{ addslashes($producto->categoria->nombre) }}@else Sin categoría @endif'
             }@if(!$loop->last),@endif
             @endforeach
         ];

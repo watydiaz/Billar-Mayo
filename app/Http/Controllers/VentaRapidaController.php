@@ -106,7 +106,7 @@ class VentaRapidaController extends Controller
     public function obtenerProductos()
     {
         try {
-            $productos = Producto::where('activo', true)
+            $productos = Producto::with('categoria')->where('activo', true)
                 ->where('stock_actual', '>', 0) // Solo productos con stock
                 ->get()
                 ->map(function($producto) {

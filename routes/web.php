@@ -81,17 +81,29 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pedidos/{pedido}/rondas/{ronda}/productos', [App\Http\Controllers\RondaController::class, 'agregarProducto'])->name('pedidos.rondas.agregar-producto');
     Route::delete('/ronda-detalles/{detalle}', [App\Http\Controllers\RondaController::class, 'eliminarDetalle'])->name('ronda-detalles.eliminar');
     
+    // Rutas para optimización y carga lazy
+    Route::get('/pedidos/{ronda}/total', [App\Http\Controllers\RondaController::class, 'obtenerTotal'])->name('pedidos.obtener-total');
+    Route::get('/pedidos/{ronda}/detalles', [App\Http\Controllers\RondaController::class, 'obtenerDetalles'])->name('pedidos.obtener-detalles');
+    
     // API para venta rápida
     Route::get('/venta-rapida/productos', [App\Http\Controllers\VentaRapidaController::class, 'obtenerProductos'])->name('venta-rapida.productos');
     Route::post('/venta-rapida/procesar', [App\Http\Controllers\VentaRapidaController::class, 'procesarVenta'])->name('venta-rapida.procesar');
 
-    // Rutas para gestión de productos
-    Route::resource('productos', App\Http\Controllers\ProductController::class);
+    // Rutas para gestión de productos (rutas específicas ANTES del resource)
+    Route::get('/productos/inventario-masivo', [App\Http\Controllers\ProductController::class, 'inventarioMasivo'])->name('productos.inventario-masivo');
+    Route::post('/productos/preview-import', [App\Http\Controllers\ProductController::class, 'previewImport'])->name('productos.preview-import');
+    Route::post('/productos/import', [App\Http\Controllers\ProductController::class, 'import'])->name('productos.import');
     Route::put('/productos/{id}/field', [App\Http\Controllers\ProductController::class, 'updateField'])->name('productos.update-field');
     Route::put('/productos/{id}/toggle-status', [App\Http\Controllers\ProductController::class, 'toggleStatus'])->name('productos.toggle-status');
+    // Resource route (debe ir AL FINAL)
+    Route::resource('productos', App\Http\Controllers\ProductController::class);
 
     // Rutas para gestión de ventas
     Route::get('/ventas/estadisticas', [App\Http\Controllers\VentaController::class, 'estadisticas'])->name('ventas.estadisticas');
     Route::resource('ventas', App\Http\Controllers\VentaController::class);
 
 });
+
+// Rutas API sin autenticación (temporal para desarrollo)
+Route::get('/api/categorias', [App\Http\Controllers\ProductController::class, 'getCategorias'])->name('api.categorias');
+Route::get('/api/productos', [App\Http\Controllers\ProductController::class, 'getProductos'])->name('api.productos');

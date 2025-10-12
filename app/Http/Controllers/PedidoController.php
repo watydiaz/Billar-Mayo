@@ -21,7 +21,7 @@ class PedidoController extends Controller
             ->get();
             
         $mesas = Mesa::where('activa', true)->get();
-        $productos = \App\Models\Producto::where('activo', true)
+        $productos = \App\Models\Producto::with('categoria')->where('activo', true)
             ->orderBy('nombre')
             ->get();
         

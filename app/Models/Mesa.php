@@ -10,16 +10,16 @@ class Mesa extends Model
     protected $table = 'mesas';
     
     protected $fillable = [
-        'numero_mesa',
-        'capacidad',
-        'precio_hora',
-        'activa',
-        'descripcion'
+        'numero',
+        'tipo',
+        'precio_por_hora',
+        'estado',
+        'descripcion',
+        'activa'
     ];
 
     protected $casts = [
-        'precio_hora' => 'decimal:2',
-        'capacidad' => 'integer',
+        'precio_por_hora' => 'decimal:2',
         'activa' => 'boolean'
     ];
 

@@ -14,17 +14,14 @@ class Ronda extends Model
     protected $fillable = [
         'numero_ronda',
         'cliente',
-        'total_ronda',
-        'responsable',
+        'total',
         'estado',
-        'es_duplicada',
-        'ronda_origen_id'
+        'observaciones'
     ];
 
     protected $casts = [
-        'numero_ronda' => 'string', // Ahora es string
-        'total_ronda' => 'decimal:2',
-        'es_duplicada' => 'boolean'
+        'numero_ronda' => 'string',
+        'total' => 'decimal:2'
     ];
 
     // Las rondas ahora son independientes, sin relación con pedidos
