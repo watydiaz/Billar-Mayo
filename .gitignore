@@ -97,3 +97,20 @@ Homestead.yaml
 # Temporary files
 *.tmp
 *.temp
+
+# Ignorar carpetas y archivos innecesarios
+/public/js/
+/resources/views/layouts/
+# Archivos temporales y de sistema
+.DS_Store
+Thumbs.db
+# Archivos SQL y documentación de estructura
+/barcode_terkkos (1).sql
+/database_structure.json
+/database_structure.md
+/database_structure.sql
+/ESTRUCTURA_BASE_DATOS.md
+/get_database_structure.php
+/test-api.html
+# Archivos de pruebas
+/tests/
